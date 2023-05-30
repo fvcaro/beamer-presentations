@@ -1,20 +1,81 @@
 \documentclass[10pt,aspectratio=149]{beamer}
+
+% Themes and color theme
 \usetheme{Boadilla}
 \usecolortheme[RGB={8,164,255}]{structure}
 \usetheme[height=8mm]{Rochester}
 
+% Custom packages and settings
 \input{preambule.tex}
+
+% Beamer templates and font theme
+\setbeamertemplate{items}[ball]
+\setbeamertemplate{blocks}[rounded][shadow=true]
+\setbeamertemplate{navigation symbols}{}
+\usefonttheme{structurebold}
+
+% Footline templates
+\defbeamertemplate{footline}{centered page number}{...}
+\defbeamertemplate{footline}{centered frame number}{...}
+\setbeamertemplate{footline}[centered page number]
+\setbeamertemplate{footline}[centered frame number]
+
+% TikZ libraries and settings
+\usetikzlibrary{datavisualization, patterns}
+\usepgfplotslibrary{fillbetween}
+\usetikzlibrary{decorations.markings,intersections,calc}
+\usetikzlibrary{decorations.pathreplacing}
+\usetikzlibrary{fit}
+\makeatletter
+\tikzset{
+  fitting node/.style={
+    inner sep=0pt,
+    fill=none,
+    draw=none,
+    reset transform,
+    fit={(\pgf@pathminx,\pgf@pathminy) (\pgf@pathmaxx,\pgf@pathmaxy)}
+  },
+  reset transform/.code={\pgftransformreset}
+}
+\makeatother
+
+% PGFPlots libraries
+\usepgfplotslibrary{colormaps}
+\usepgfplotslibrary{colorbrewer}
+\usepgfplotslibrary{external}
+
+% Additional packages
+\usepackage{tikz-3dplot}
+\usepgfplotslibrary{groupplots}
+\usetikzlibrary{overlay-beamer-styles}
+\usetikzlibrary{spy}
+
+% Plot dimensions and paths
+\newlength{\plotwidth}
+\newlength{\plotheight}
+\setlength{\plotheight}{0.85\textheight}
+\setlength{\plotwidth}{0.9\textwidth}
+\newlength{\plotwidthmesh}
+\setlength{\plotwidthmesh}{0.49\textwidth}
+\newcommand{\subplotwidth}{0.45\textwidth}
+\newcommand{\subplotwidthhp}{0.49\textwidth}
+\newcommand{\subplotheight}{\plotwidth}
+\newcommand{\figpath}{Figures}
+\newcommand{\FigurePath}{Figures}
+\newcommand{\DataPath}{}
+
+% Include plot_beamer.tex
 \input{plot_beamer.tex}
 
-\author{Julen Alvarez-Aramberri, \inst{1} \and Vincent Darrigrand, \inst{3} \newline \and \underline{Felipe V. Caro}, \inst{2,1}\and David Pardo \inst{1,2,4}}
-\institute[]{\inst{1}  University of the Basque Country (UPV-EHU), Leioa, Spain \and %
-	\inst{2} Basque Center for Applied Mathematics (BCAM), Bilbao, Spain \and  
+% Author, institute, title, and date
+\author{Julen Alvarez-Aramberri \inst{2} \and Vincent Darrigrand \inst{3} \and \underline{Felipe V. Caro }\inst{1,2} \and David Pardo \inst{2,1,4}}
+\institute[]{\inst{1} Basque Center for Applied Mathematics (BCAM), Bilbao, Spain \and %
+	\inst{2} University of the Basque Country (UPV-EHU), Leioa, Spain \and 
 	\inst{3} CNRS-IRIT, Toulouse, France \and 
 	\inst{4} Basque Foundation for Science (Ikerbasque), Bilbao, Spain}
 \title[ADMOS2023]{Generation of Massive Databases for Deep Learning Inversion: A Goal-Oriented $hp$-Adaptive Strategy}
-\vspace{2mm}
-\date{June 19, 2023 \\ ADMOS, Gothenburg, Sweden} 
-
+\date{ADMOS, Gothenburg, Sweden} 
+% Set author, date, and institute colors and fonts
 \setbeamercolor{author}{fg=black!80!white}
 \setbeamercolor{date}{fg=black!80!white}
 \setbeamercolor{institute}{fg=black!60!white}
@@ -22,14 +83,15 @@
 \setbeamerfont*{title}{family=\sffamily,series=\bf,size=\large}
 \setbeamerfont*{author}{family=\sffamily,series=\bfseries,size=\large}
 \setbeamerfont*{institute}{family=\sffamily,series=\bf,size=\scriptsize}
-%
+
+% Begin document
 \begin{document}
-%{\usebackgroundtemplate{\includegraphics[width=\paperwidth, ]{background_opening_slide.jpg}}
+
+% Opening frame
 \begin{frame}[plain]
 \includegraphics[height=0.1\textheight]{Figures/logo_upv}
 \hfill
 \includegraphics[height=0.1\textheight]{Figures/logo_bcam}
 \titlepage
 \end{frame} 
-%==============================================================================================================================================================================
 \end{document}
