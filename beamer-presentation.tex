@@ -74,7 +74,8 @@
 	\inst{3} CNRS-IRIT, Toulouse, France \and 
 	\inst{4} Basque Foundation for Science (Ikerbasque), Bilbao, Spain}
 \title[ADMOS2023]{Generation of Massive Databases for Deep Learning Inversion: A Goal-Oriented $hp$-Adaptive Strategy}
-\date{ADMOS, Gothenburg, Sweden} 
+\date{\normalsize XI International Conference on Adaptive Modeling and Simulation (ADMOS) \\[0.3cm] Gothenburg, Sweden, 19 June 2023}
+
 % Set author, date, and institute colors and fonts
 \setbeamercolor{author}{fg=black!80!white}
 \setbeamercolor{date}{fg=black!80!white}
@@ -94,4 +95,322 @@
 \includegraphics[height=0.1\textheight]{Figures/logo_bcam}
 \titlepage
 \end{frame} 
+
+% Motivation frame
+\begin{frame}
+    \frametitle{Motivation: Electromagnetic (EM) Applications}
+    \begin{figure}
+        \centering
+        \begin{subfigure}[b]{0.4\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{Figures/csem}
+            \caption{CSEM (artificial source)}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}[b]{0.4\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{Figures/magneto}
+            \caption{MT (natural source)}
+        \end{subfigure}
+    \end{figure}
+    \vfill
+    \begin{block}{Objective}
+        \centering
+        \textbf{\textcolor{red}{Objective}}: To obtain the \textbf{conductivity/resistivity} distribution of the Earth's subsurface.
+    \end{block}
+\end{frame}
+%        \begin{itemize}
+%  		\item Controlled-Source Electromagnetic (CSEM) and Magnetotelluric (MT) methods are widely used geophysical techniques.
+%  		\item CSEM involves the injection of electromagnetic signals into the Earth's subsurface, while MT measures naturally occurring electromagnetic fields.
+%  		\item These methods provide valuable insights into the subsurface's electrical properties, such as resistivity and conductivity.
+%  		\item CSEM and MT problems involve the estimation of subsurface parameters from measured data, typically through inverse modeling.
+%  		\item Deep Learning inversion has shown promising results in solving CSEM and MT problems, but it requires large databases for training.
+%	\end{itemize}
+%================================================================================================================
+\begin{frame}
+	\frametitle{Motivation: Preliminaries}
+	
+	\begin{figure}
+		\begin{tikzpicture}[x=0.40cm,y=0.40cm]
+			\node[punkt,fill=brown!20](resistivity){\footnotesize Physical Properties $(\boldsymbol{m})$};
+			\node[punkt, right=6 of resistivity,fill=brown!20](num_sol){\footnotesize Measurements $(\boldsymbol{d})$};
+			
+			\draw [punkt,->,color=orange] (resistivity.north) to[out=45, in=135] node [anchor=north,swap,sloped,color=orange] {Forward Problem \\ $\calF$} (num_sol.north);
+			\draw [punkt,->,color=blue] (num_sol.south) to[out=225, in=-45] node [anchor=south,swap,sloped,color=blue] {$\calI$ \\ Inverse Problem} (resistivity.south);
+		\end{tikzpicture}
+	\end{figure}
+
+	\begin{block}{Definitions}
+		\begin{equation*}
+			\begin{array}{lcll}
+				\calF & : & \mbox{Forward Operator.}  & \mbox{Physical Properties $(\boldsymbol{m})$} \rightarrow \mbox{Measurements $(\boldsymbol{d})$} \\[2mm]
+				\calI & : & \mbox{Inverse Operator.}  &\mbox{Measurements $(\boldsymbol{d})$} \rightarrow \mbox{Physical Properties $(\boldsymbol{m})$} \\[2mm]
+				\calI_{\phi} & :& \mbox{Neural Network appr. of } \calI.  &
+			\end{array}
+		\end{equation*}
+	\end{block}
+
+	\begin{block}{}
+		\centering
+		\textbf{\tcr{Goal}}: To build the \textbf{Inverse Operator} (not only to evaluate it).
+	\end{block}
+%\begin{itemize}
+%  \item Introduction to the problem: Start by introducing the overall problem or field of study, such as electromagnetic applications in geophysics. Briefly explain the importance of understanding the subsurface properties like conductivity/resistivity.
+%  
+%  \item Model Space and Data Space: Discuss the concept of the model space ($\boldsymbol{m}$) and the data space ($\boldsymbol{d}$). Explain that the model space represents the physical properties of interest, such as the conductivity distribution in the Earth's subsurface. The data space represents the measurements or observations obtained from the physical system.
+%  
+%  \item Forward Operator ($\calF$): Introduce the concept of the forward operator. Explain that the forward operator maps the physical properties in the model space to the corresponding measurements in the data space. It represents the physical process or phenomenon that relates the model properties to the observed data.
+%  
+%  \item Inverse Operator ($\calI$): Discuss the inverse operator, which is the key focus of the frame. Explain that the inverse operator performs the inverse process, mapping the measured data back to the physical properties in the model space. It is used to estimate or reconstruct the desired properties from the available measurements.
+%  
+%  \item Neural Network Approximation: Mention that the inverse operator ($\calI$) can be challenging to construct analytically due to the complexity of the problem. Introduce the idea of using a neural network ($\calI_{\phi}$) as an approximation of the inverse operator. Briefly explain that the neural network can learn the mapping between the measured data and the physical properties through training.
+%  
+%  \item Goal: Emphasize that the main goal is not only to evaluate the inverse operator but also to build it. Explain that constructing the inverse operator involves developing a neural network model that can effectively learn the mapping and accurately estimate the physical properties from the measurements.
+%  
+%  \item Importance and Applications: Discuss the importance of building the inverse operator in the context of electromagnetic applications. Highlight that an accurate and reliable inverse operator enables the estimation of subsurface properties, which is crucial for various fields like geophysics, environmental studies, and resource exploration.
+%\end{itemize}
+\end{frame}
+%================================================================================================================
+\begin{frame}
+    \frametitle{Motivation: Generation of Massive Databases}    
+    
+    \vspace{-2mm}
+    
+    \begin{block}{Definition of the Loss Function}
+        \[
+        \calI_{\phi^*} \coloneqq \argmin_{\calI_{\phi},\phi \in \boldsymbol{\Phi}} \sum \left\| (\tcr{\calF} \circ \calI_{\phi})(\boldsymbol{d}_i) - \boldsymbol{d}_i \right\| \rightarrow \text{Evaluating } \tcr{\calF} \text{ is \tcr{expensive}!}
+        \]
+    \end{block}
+        
+    \begin{block}{Difficulties}
+        \begin{enumerate}
+            \item We need a Forward Solver \tcr{$\calF$} for \tcr{any parametrization} (model)
+            \item A huge number of evaluations needed to train the DNN
+        \end{enumerate}
+    \end{block}
+    
+    \begin{block}{Alternatives $\rightarrow$ Motivation}
+        \begin{enumerate}
+            \item Approximate the Forward Operator with a Neural Network
+            \item \underline{To develop a \tcr{fast Forward Solver valid for any model parameters}}
+        \end{enumerate}
+    \end{block}
+    
+    \begin{block}{Our Choice}
+        \centering
+        $hp$-Adaptive Finite Element Method
+    \end{block}
+    
+%    \begin{itemize}
+%        \item \textbf{Definition of the Loss Function:}
+%        \begin{itemize}
+%        \item Introduce the concept of the loss function in the context of generating massive databases.
+%        \item Present the mathematical formulation of the loss function, denoted as $\calI_{\phi^*}$.
+%        \item Explain that the goal is to minimize the difference between the output of the composition $(\tcr{\calF} \circ \calI)$ and the target data $\boldsymbol{m}_i$.
+%        \item Highlight that evaluating the forward operator $\tcr{\calF}$ is expensive.
+%        \end{itemize}
+%    \end{frame}
+%
+%    \item \textbf{Difficulties:}
+%    \begin{itemize}
+%        \item Discuss the challenges faced in generating massive databases.
+%        \item Emphasize the need for a forward solver $\calF$ that can handle any parametrization or model.
+%        \item Mention the large number of evaluations required to train the deep neural network (DNN) used in the process.
+%    \end{itemize}
+%    
+%    \item \textbf{Alternatives:}
+%    \begin{itemize}
+%        \item Present alternative approaches to address the difficulties mentioned.
+%        \item Propose approximating the forward operator $\calF$ with a neural network.
+%        \item Highlight the importance of developing a fast forward solver that is valid for any model parameters.
+%    \end{itemize}
+%    
+%    \item \textbf{Our Choice:}
+%    \begin{itemize}
+%        \item Introduce the $hp$-Adaptive Finite Element Method as your chosen approach.
+%        \item Explain the benefits and advantages of using this method in generating massive databases.
+%        \item Emphasize how the $hp$-Adaptive Finite Element Method overcomes the difficulties and provides efficient solutions.
+%    \end{itemize}
+%    
+%    \end{itemize}
+\end{frame}
+%================================================================================================================
+\begin{frame}
+	\frametitle{Outline}
+	\tableofcontents
+\end{frame}
+%================================================================================================================
+\section{Our $hp$-Adaptive Finite Element Method Strategy}
+%================================================================================================================
+\begin{frame}
+    \frametitle{Outline}
+    \tableofcontents[currentsection]
+\end{frame}
+%================================================================================================================
+\begin{frame}
+\frametitle{Goal-Oriented Adaptivity}
+
+\begin{block}{}
+\begin{figure}
+	\centering
+	\begin{tikzpicture}[x=0.14cm,y=0.14cm]
+	
+	\node(origin) at (0,0) {};
+	\node(end) at ($(origin)+(10,10)$) {};
+	
+	\node(f_int_origin) at (0.5,0.5) {};
+	\node(f_int_end) at (1.5,1.5) {};
+	\node(l_int_origin) at (8.5,8.5) {};
+	\node(l_int_end) at (9.5,9.5) {};
+	
+	\node(layer1) at ($(origin)+(0,-0)$) {};
+	\node(layer1_end) at ($(layer1)+(10,10)$) {};
+	
+	\draw [draw=black,fill=white,thick] (origin) rectangle (end);
+	\draw[] ($(origin)+(5,0)$) -- ($(origin)+(5,10)$);
+	\draw[] ($(origin)+(0,5)$) -- ($(origin)+(10,5)$);
+	\node(s1) at ($(origin)+(2.5,2.5)$) {$\sig_3$};
+	\node(s2) at ($(origin)+(7.5,2.5)$) {$\sig_4$};
+	\node(s3) at ($(origin)+(2.5,7.5)$) {$\sig_1$};
+	\node(s4) at ($(origin)+(7.5,7.5)$) {$\sig_2$};
+	\node(s5) at ($(origin)+(5,-2)$) {$\m$}; 
+	\node(ss) at ($(origin)+(30,5)$) {$\rightarrow$ \hspace{3mm} Construction of $1$ $hp$-grid};
+	\node(sss) at ($(origin)+(-24,7.5)$) {$\m = \{\sig_1, \ldots, \sig_N\}$};
+	\node(ssss) at ($(origin)+(-24,2.5)$) {$1$ sample of model parameters};
+	
+	
+	\end{tikzpicture}
+\end{figure}
+\end{block}
+
+\begin{block}{The objective in Goal-Oriented Adaptivity}
+	To produce a space $\H_{\calF}$ with minimum dimension such that
+	\vspace{-2mm}
+	\begin{align}
+	\abs{l(u^{\calF})-l(u)} < \varepsilon, \quad \text{for any } \varepsilon > 0,
+	\end{align}
+	where \tcr{$l(\cdot)$} is a linear and continuous functional that defines the \tcr{Quantity of Interest} (QoI).
+\end{block}
+
+\begin{block}{Discrete Variational Formulations}
+	Given a model $\m$, find $\um^{\calF}, \vm^{\calF} \in \H_{\calF}$ such that
+	\vspace{-1mm}
+	\begin{equation*}
+	\begin{array}{lrcl}
+	\text{Forward Problem:} \hspace{15mm} & b(\um^{\calF},\phi^{\calF}) & = & f(\phi^{\calF}), \quad \forall \phi^{\calF} \in \H_{\calF},   \\[2mm]
+	\text{Adjoint Problem:} \hspace{15mm} & b(\phi^{\calF},\vm^{\calF}) & = & l(\phi^{\calF}), \quad \forall \phi^{\calF} \in \H_{\calF}. \\
+	\end{array}
+	\end{equation*}
+\end{block}
+
+%Explain the process of constructing a $1$ $hp$-grid, as depicted in the figure. Elaborate on the different elements $\sig_1, \sig_2, \sig_3, \sig_4$, and $\m$, which represent the grid elements and the model parameters, respectively. Emphasize that the goal is to construct an optimized grid based on the given model parameters.
+
+%Emphasize the significance of minimizing the dimension of the adapted space $\H_{\calF}$ while maintaining the desired accuracy in the quantity of interest. Explain how this optimization process allows for efficient computations and resource utilization.
+
+\end{frame}
+%================================================================================================================
+\begin{frame}
+	\frametitle{Goal-Oriented Adaptivity}
+\begin{block}{Element-Wise ($K$) Error Indicators}
+	We obtain error indicators $\eta_K$ that measure the importance of each basis function.
+\end{block}
+
+\begin{figure}
+	\centering
+	\begin{tikzpicture}[x=0.45cm,y=0.5cm]
+	
+		\node(origin) at (0,0) {};
+		\node(end) at ($(origin)+(10,10)$) {};
+		
+		\node(f_int_origin) at (0.5,0.5) {};
+		\node(f_int_end) at (1.5,1.5) {};
+		\node(l_int_origin) at (8.5,8.5) {};
+		\node(l_int_end) at (9.5,9.5) {};
+		
+		\node(layer1) at ($(origin)+(13,-0)$) {};
+		\node(layer1_end) at ($(layer1)+(10,10)$) {};
+		
+		\draw [draw=black,fill=white,very thick] (origin) rectangle (end);
+		\draw [draw=black,fill=brown!20,very thick] (origin) rectangle ($(origin)+(5,5)$);
+		\draw [draw=black,fill=gray!20,very thick] ($(origin)+(5,0)$) rectangle ($(origin)+(10,5)$);
+		\draw [draw=black,fill=purple!20,very thick] ($(origin)+(0,5)$) rectangle ($(origin)+(5,10)$);
+		\draw [draw=black,fill=orange!40,very thick] ($(origin)+(5,5)$) rectangle ($(origin)+(10,10)$);
+		
+		\node(s1) at ($(origin)+(2.5,2.5)$) {\Large{$\sig_3$}};
+		\node(s2) at ($(origin)+(7.5,2.5)$) {\Large{$\sig_4$}};
+		\node(s3) at ($(origin)+(2.5,7.5)$) {\Large{$\sig_1$}};
+		\node(s4) at ($(origin)+(7.5,7.5)$) {\Large{$\sig_2$}};
+		\node(s5) at ($(origin)+(5,-1)$) {\tcr{(a)} Model Parameters Grid};
+		
+		\node(arr) at ($(layer1)+(-1.5,5)$) {$\rightarrow$}; 
+		\draw [draw=black,fill=white,very thick] (layer1) rectangle (layer1_end);
+		\draw [draw=black,fill=brown!20,very thick] (layer1) rectangle ($(layer1)+(5,5)$);
+		\draw [draw=black,fill=gray!20,very thick] ($(layer1)+(5,0)$) rectangle ($(layer1)+(10,5)$);
+		\draw [draw=black,fill=purple!20,very thick] ($(layer1)+(0,5)$) rectangle ($(layer1)+(5,10)$);
+		\draw [draw=black,fill=orange!40,very thick] ($(layer1)+(5,5)$) rectangle ($(layer1)+(10,10)$);
+		
+		\draw[] ($(layer1)+(2.5,0)$) -- ($(layer1)+(2.5,10)$);
+		\draw[] ($(layer1)+(7.5,0)$) -- ($(layer1)+(7.5,10)$);
+		\draw[] ($(layer1)+(0,2.5)$) -- ($(layer1)+(10,2.5)$);
+		\draw[] ($(layer1)+(0,7.5)$) -- ($(layer1)+(10,7.5)$);
+		
+		\node(e) at ($(layer1)+(1.25,1.25)$) {\Large{$\eta_{13}$}};
+		\node(e) at ($(layer1)+(3.75,1.25)$) {\Large{$\eta_{14}$}};
+		\node(e) at ($(layer1)+(6.25,1.25)$) {\Large{$\eta_{15}$}};
+		\node(e) at ($(layer1)+(8.75,1.25)$) {\Large{$\eta_{16}$}};
+		
+		\node(e) at ($(layer1)+(1.25,3.75)$) {\Large{$\eta_{9}$}};
+		\node(e) at ($(layer1)+(3.75,3.75)$) {\Large{$\eta_{10}$}};
+		\node(e) at ($(layer1)+(6.25,3.75)$) {\Large{$\eta_{11}$}};
+		\node(e) at ($(layer1)+(8.75,3.75)$) {\Large{$\eta_{12}$}};
+		
+		\node(e) at ($(layer1)+(1.25,6.25)$) {\Large{$\eta_{4}$}};
+		\node(e) at ($(layer1)+(3.75,6.25)$) {\Large{$\eta_{5}$}};
+		\node(e) at ($(layer1)+(6.25,6.25)$) {\Large{$\eta_{6}$}};
+		\node(e) at ($(layer1)+(8.75,6.25)$) {\Large{$\eta_{7}$}};
+		
+		\node(e) at ($(layer1)+(1.25,8.75)$) {\Large{$\eta_{1}$}};
+		\node(e) at ($(layer1)+(3.75,8.75)$) {\Large{$\eta_{2}$}};
+		\node(e) at ($(layer1)+(6.25,8.75)$) {\Large{$\eta_{3}$}};
+		\node(e) at ($(layer1)+(8.75,8.75)$) {\Large{$\eta_{4}$}};
+		
+		\node(l_m3) at ($(layer1)+(5,-1)$) {\tcr{(b)} FEM Grid (Conforming with Parameters)};
+		
+	\end{tikzpicture}
+\end{figure}
+
+\end{frame}
+%================================================================================================================
+\begin{frame}{Our Painless $hp$-Adaptive FEM: Coarsening Strategy}
+  \tikzset{/tikz/external/export next=false}
+  \begin{center}
+    \begin{tikzpicture}
+      \node[rounded rectangle, draw, very thick](Init) {Initial coarse mesh};
+      \node[below right=1/2 of Init,rounded rectangle, draw, very thick,color=blue,align=center](ref) {Arbitrary \\(user-defined/global)\\ refinements};
+      \node[below= of ref, rounded rectangle, draw, very thick,color=green!50!black, align=center](unrefProcess) {Quasi-optimal\\$hp$-unrefinements \\ using the error indicators};
+      \node[below right=1/2 of unrefProcess,rounded rectangle, draw, very thick](final) {Adapted mesh};
+
+      \draw[->, thick] (Init) -| (ref);
+      \draw[->, thick,color=blue] (ref.east) to[out=0,in=0] (unrefProcess.east);
+      \draw[->, thick,color=green!50!black] (unrefProcess.west) to[out=180,in=180] node[pos=0.5](PinExitRef){} (ref.west);
+      \draw[->, thick] (unrefProcess) |- (final);
+    \end{tikzpicture}
+  \end{center}
+
+  \begin{thebibliography}{10}
+    \beamertemplatearticlebibitems
+    \scriptsize
+    \bibitem{darrigrand2020painless}
+    V. Darrigrand, D. Pardo, T. Chaumont-Frelet, I. G{\'o}mez-Revuelto, L. E. Garcia-Castillo
+    \newblock A painless automatic $hp$-adaptive strategy for elliptic problems
+    \newblock \emph{Finite Elements in Analysis and Design}, 2020
+  \end{thebibliography}
+\end{frame}
+
+%================================================================================================================
+\begin{frame}[c]
+	\frametitle{Illustration of an $hp$-GOA FEM: Helmholtz Equation}
+	\plothpsolmeshhp[]{Helm2DGOA}
+\end{frame}
+
 \end{document}
