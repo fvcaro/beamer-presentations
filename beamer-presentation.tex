@@ -61,8 +61,6 @@
 \newcommand{\subplotwidthhp}{0.49\textwidth}
 \newcommand{\subplotheight}{\plotwidth}
 \newcommand{\figpath}{Figures}
-\newcommand{\FigurePath}{Figures}
-\newcommand{\DataPath}{}
 
 % Include plot_beamer.tex
 \input{plot_beamer.tex}
@@ -406,11 +404,23 @@
     \newblock \emph{Finite Elements in Analysis and Design}, 2020
   \end{thebibliography}
 \end{frame}
-
 %================================================================================================================
 \begin{frame}[c]
 	\frametitle{Illustration of an $hp$-GOA FEM: Helmholtz Equation}
-	\plothpsolmeshhp[]{Helm2DGOA}
+	\begin{figure}[t!]
+   		\goasolutions[unitsquare]{Helm2DGOA}{abs}
+	\end{figure}
 \end{frame}
+%================================================================================================================
+\begin{frame}[c]
+	\frametitle{Illustration of an $hp$-GOA FEM: Helmholtz Equation}
+  	\plothpmeshes[]{Helm2DGOA}
+\end{frame}
+%================================================================================================================
+\begin{frame}
+	\frametitle{Illustration of an $hp$-Adaptive FEM: Helmholtz Equation}
+	\plothpunrefmago{hpmago}
+\end{frame}
+%================================================================================================================
 
 \end{document}

@@ -1,3 +1,263 @@
+% !TEX root =../beamer-presentation.tex
+% !TEX spellcheck = English
+\newcommand*{\PbName}{}
+\newcommand*{\GOAPbName}{}
+\newcommand*{\EnergyPbName}{}
+\newcommand*{\ColName}{}
+\newcommand*{\FigurePath}{Figures}
+\newcommand*{\DataPath}{}
+
+\newcommand*{\directadjointsolution}[5]{%
+  \renewcommand*{\DataPath}{\FigurePath/#1}
+  \pgfplotsset{%
+    colormap={paraview}{rgb=(0.231373, 0.298039, 0.752941) rgb=(0.865003, 0.865003, 0.865003) rgb=(0.705882, 0.0156863, 0.14902)}%
+  }%
+  \pgfplotsset{colormap name={paraview}}%
+
+  \getelemdbl{\DataPath/#3_#2_ColorbarValues.dat}{min_value}{0}{\scaleMin}
+  \getelemdbl{\DataPath/#3_#2_ColorbarValues.dat}{max_value}{0}{\scaleMax}
+  \getelemdbl{\DataPath/#3_#2_ColorbarValues.dat}{mean_value}{0}{\scaleMean}
+
+  \tikzset{/tikz/external/export next=false}
+
+  \IfSubStr{#5}{unitsquare}
+  {   	\begin{tikzpicture}
+      \begin{axis}[name=master,
+          width=\textwidth,height=\textwidth,
+          enlargelimits=false,
+          xlabel=$x$,
+          ylabel=$y$,
+          xlabel near ticks,
+          ylabel near ticks,
+          colorbar horizontal,
+          colorbar style={%
+              xtick={\scaleMin,\scaleMean,\scaleMax},
+              title={#4 solution},
+              at={(master.above north west)},anchor=south west,
+              yshift=2pt,
+              title style={
+                  yshift=5pt
+                },
+              yshift=0.2em,
+              xticklabel pos=upper,
+            },
+          point meta min=\scaleMin,
+          point meta max=\scaleMax,
+        ]
+        %
+        \addplot [forget plot] graphics[xmin=0,xmax=1,ymin=0,ymax=1] {\DataPath/coarse_mesh_fine_#2_#3.png};
+
+      \end{axis}
+    \end{tikzpicture}}
+  {\begin{tikzpicture}
+      \begin{axis}[name=master,
+          width=\textwidth,height=\textwidth,
+          enlargelimits=false,
+          hide axis,
+          xticklabels={},
+          yticklabels={},
+          axis line style={draw=none},
+	  tick style={draw=none},
+ 	  hide axis,
+          colorbar horizontal,
+          colorbar style={%
+              xtick={\scaleMin,\scaleMean,\scaleMax},
+              title={#4 solution},
+              at={(master.above north west)},anchor=south west,
+              yshift=10pt,
+              title style={
+                  yshift=5pt
+                },
+              yshift=0.2em,
+              xticklabel pos=upper,
+            },
+          point meta min=\scaleMin,
+          point meta max=\scaleMax,
+        ]
+        %
+        \addplot [forget plot] graphics[xmin=0,xmax=1,ymin=0,ymax=1] {\DataPath/coarse_mesh_fine_#2_#3.png};
+        %
+      \end{axis}
+    \end{tikzpicture}}
+}
+
+\newcommand*{\goasolutions}[3][]{%
+  \renewcommand*{\DataPath}{\FigurePath/#2/hp/order_1}
+  \findmax{\DataPath/outputs.txt}{iter}{\endIter}
+
+  \FormatIntegerTwoDigit{\endIter}{\endIterformated}
+  \FormatIntegerThreeDigit{\endIter}{\endIterformatedthree}
+ %
+  \begin{subfigure}[t]{0.45\textwidth}
+    \centering
+    \directadjointsolution{#2/hp/order_1}{\endIterformated}{Direct_solution_#3}{Direct}{#1}%
+    \caption{Solution to the direct problem.}
+    \label{fig:#2_dir}
+  \end{subfigure}
+  ~
+  \begin{subfigure}[t]{0.45\textwidth}
+   \centering
+   \directadjointsolution{#2/hp/order_1}{\endIterformated}{Adjoint_solution_#3}{Adjoint}{#1}%
+    \caption{Solution to the adjoint problem.}
+    \label{fig:#2_adj}
+  \end{subfigure}
+}
+
+\newcommand{\plothpmeshes}[2][]{
+  \renewcommand{\DataPath}{\FigurePath/#2/hp/order_1}
+  \findmax{\DataPath/outputs.txt}{iter}{\endIter}
+  \FormatIntegerTwoDigit{\endIter}{\endIterformated}
+  \FormatIntegerThreeDigit{\endIter}{\endIterformatedthree}
+
+  \only<+>{%
+    \begin{figure}
+      \centering
+      \foreach \i in {x,y}{%
+        \begin{subfigure}{\subplotwidth}
+          \centering
+          \hpmeshes{#2/hp/order_1}{\endIterformatedthree}{\i}%
+          \subcaption{Polynomial orders in the \i-direction}
+        \end{subfigure}
+      }
+      \caption{Final $hp$-adapted meshes after the Goal-Oriented Adaptivity}
+    \end{figure}
+  }
+}
+
+\newcommand{\hpmeshes}[3]{%
+  \renewcommand{\DataPath}{\FigurePath/#1}
+
+  \lastelement{\DataPath/outputs.txt}{MaxP}{\maxp}
+  \lastelement{\DataPath/outputs.txt}{MinP}{\minp}
+  \tikzset{/tikz/external/export next=false}
+  \pgfplotsset{colormap/YlOrRd}
+  \begin{tikzpicture}
+    \begin{axis}[name=master,
+        width=\textwidth,height=\textwidth,
+        enlargelimits=false,
+        xlabel=$x$,
+        ylabel=$y$,
+        xlabel near ticks,
+        ylabel near ticks,
+        axis line style={draw=none},
+        tick style={draw=none},
+        hide axis,
+        colorbar horizontal,
+        colorbar style={%
+            xtick={1,3,...,\maxp},
+            title={Order of approximation},
+            at={(master.above north west)},anchor=south west,
+            yshift=1em,
+            title style={
+                yshift=2pt
+              },
+            xticklabel pos=upper,
+          },
+        point meta min=1,
+        point meta max=\maxp,
+      ]
+      %
+      \ifstrequal{#1}{}{%
+        \addplot [forget plot] graphics[xmin=-1,xmax=1,ymin=-1,ymax=1] {\DataPath/mesh_#3_#2.png};
+      }{%
+        \addplot [forget plot] graphics[xmin=0,xmax=1,ymin=0,ymax=1] {\DataPath/mesh_#3_#2.png};
+      }
+    \end{axis}
+  \end{tikzpicture}
+}
+% ========
+% unrefmago
+% ========
+%\newcommand{\plothpunrefmago}[1]{
+%  \renewcommand{\DataPath}{\FigurePath/Unref/#1/hp/order_1}
+%  \findmax{\DataPath/outputs.txt}{iter}{\endIter}
+%
+%  \findmax{\FigurePath/#1/hp/outputs.txt}{iter}{\endIterh}
+%
+%  \FormatIntegerTwoDigit{\endIterh}{\endIterhformated}
+%
+%  \begin{center}
+%    \begin{figure}
+%      \foreach \i in {1,2,...,\endIter}{%
+%        \only<+>{%
+%          \begin{subfigure}{\subplotwidthhp}
+%            \centering
+%            \tikzset{/tikz/external/export next=false}
+%            \FormatIntegerThreeDigit{\i}{\iformat}
+%            \plothpmagomesh{Unref/#1/hp/order_1}{\iformat}{#1/hp/coarse_mesh_fine_\endIterhformated_Direct_solution_abs}%
+%            \subcaption{Adaptive iteration \i ~of \endIter}
+%          \end{subfigure}
+%          \begin{subfigure}{\subplotwidthhp}
+%            \centering
+%            \errorplotlogUnrefBorrar{Unref/#1/hp/order_1}{\i}
+%            \subcaption{Evolution of the relative error}
+%          \end{subfigure}
+%          \only<1->{\caption{Adaptive process for a Helmholtz problem}}
+%        }
+%      }
+%    \end{figure}
+%  \end{center}
+%}
+%
+%\newcommand{\plothpmagomesh}[3]{%
+%  \renewcommand{\DataPath}{\FigurePath/#1}
+%
+%  \begin{tikzpicture}
+%    \begin{axis}[name=master,
+%        width=\textwidth,height=\textwidth,
+%        enlargelimits=false,
+%        xlabel=$x$,
+%        ylabel=$y$,
+%        xlabel near ticks,
+%        ylabel near ticks,
+%        hide axis,
+%      ]
+%
+%      \IfSubStr{#1}{square}{%
+%        \addplot [forget plot] graphics[xmin=-1,xmax=1,ymin=-1,ymax=1] {\DataPath/mesh_X_#2.png};
+%      }{%
+%        \addplot [forget plot] graphics[xmin=0,xmax=1,ymin=0,ymax=1] {\DataPath/mesh_X_#2.png};
+%      }
+%      \addplot [forget plot, opacity=0.2] graphics[xmin=0,xmax=1,ymin=0,ymax=1] {\FigurePath/#3};
+%
+%    \end{axis}
+%  \end{tikzpicture}%
+%}
+%
+%\newcommand{\errorplotlogUnrefBorrar}[2]{
+%  \renewcommand{\DataPath}{\FigurePath/#1}
+%
+%  \findmax{\DataPath/outputs.txt}{nr_dof}{\maxdof}
+%  \findmin{\DataPath/outputs.txt}{nr_dof}{\mindof}
+%  \findmaxDbl{\DataPath/outputs.txt}{Error}{\maxerror}
+%  \findminDbl{\DataPath/outputs.txt}{Error}{\minerror}
+%
+%  \begin{tikzpicture}
+%    \begin{axis}[name=mainerrorplot,
+%        xlabel={Number of dof},
+%        ylabel=Relative error in \%,
+%        ymode=log,
+%        xmode=log,
+%        ymin=1e-7,
+%        ymax=1e3,
+%        xmin=\mindof,
+%        xmax=\maxdof,
+%        width=0.9\textwidth,height=0.85\plotwidthmesh,
+%        ylabel near ticks,
+%        xlabel near ticks,
+%        enlargelimits=true,
+%        legend style={draw=black,fill=white,legend cell align=left, at={(0.5,1.01)}, anchor=south},
+%        legend columns=-1
+%      ]
+%      \addplot+[ line width=1pt, select coords between index={0}{#2}] table[x expr=\thisrow{nr_dof},y expr=\thisrow{Error}] {\FigurePath/#1/outputs.txt};
+%    \end{axis}
+%  \end{tikzpicture}
+%}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% OLD
+
 
 
 \tikzset{mark size=3}
@@ -1773,56 +2033,6 @@ hide axis,
 \end{axis}
 \end{tikzpicture}%
 }
-
-%:\captionifthen
-\newcommand{\captionifthen}[1]{%
-\ifthenelse{\equal{#1}{lap2D}}{Regular GOA}{%
-\ifthenelse{\equal{#1}{CrossGOA}}{Singular Poisson GOA}{%
-\ifthenelse{\equal{#1}{DiffConv2D}}{Boundary Layer}{%
-\ifthenelse{\equal{#1}{Helm2DGOANon}}{Singular wave propagation}{%
-\ifthenelse{\equal{#1}{DiffConv2DGOA}}{Boundary Layer GOA}{%
-\ifthenelse{\equal{#1}{Helm2DGOA}}{Singular wave propagation}{%
-\ifthenelse{\equal{#1}{maxwellGOA}}{Maxwell GOA}{%
-\ifthenelse{\equal{#1}{sinsin2D}}{Regular}{%
-\ifthenelse{\equal{#1}{singularsquare2D}}{Singular}{%
-\ifthenelse{\equal{#1}{sin2D}}{Regular one dimensional}{%
-\ifthenelse{\equal{#1}{singular2D}}{Singular one dimensional}{%
-\ifthenelse{\equal{#1}{atan2D}}{Shock one dimensional}{%
-\ifthenelse{\equal{#1}{atancircle2D}}{Shock}{prout!}%
-}}}}}}}}}}}}%
-}
-
-\newcommand{\captionifthenlegend}[1]{%
-\ifthenelse{\equal{#1}{lap2D}}{$H^1$ semi-norm}{%
-\ifthenelse{\equal{#1}{lap2DLshape}}{$H^1$ semi-norm}{%
-\ifthenelse{\equal{#1}{DiffConv2D}}{the QoI}{%
-\ifthenelse{\equal{#1}{Helm2DGOA}}{the QoI}{%
-\ifthenelse{\equal{#1}{CrossGOA}}{the QoI}{%
-\ifthenelse{\equal{#1}{DiffConv2DGOA}}{the QoI}{%
-\ifthenelse{\equal{#1}{Helm2DGOANon}}{the energy-norm}{%
-\ifthenelse{\equal{#1}{maxwellGOA}}{the QoI}{%
-\ifthenelse{\equal{#1}{sinsin2D}}{$H^1$ semi-norm}{%
-\ifthenelse{\equal{#1}{singularsquare2D}}{$H^1$ semi-norm}{%
-\ifthenelse{\equal{#1}{sin2D}}{$H^1$ semi-norm}{%
-\ifthenelse{\equal{#1}{singular2D}}{$H^1$ semi-norm}{%
-\ifthenelse{\equal{#1}{atan2D}}{$H^1$ semi-norm}{%
-\ifthenelse{\equal{#1}{atancircle2D}}{$H^1$ semi-norm}{prout!}%
-}}}}}}}}}}}}}%
-}
-
-%:\plotmeshgif
-\newcommand{\plotmeshgif}[3]{%
-\renewcommand{\DataPath}{\FigurePath/#1/hp/p2/unref_0.1/unref_h_0.3}
-\findmax{\DataPath/outputs.txt}{iter}{\endIter}
-\pgfmathparse{subtract(\endIter,-1)} 
-\pgfmathtruncatemacro\index{\pgfmathresult}
-%
-%
-\begin{subfigure}{\subplotwidth}
-	\plothpDmeshGIF{#1/hp/p2/unref_0.1/unref_h_0.3}{#2}{\index}{#3}
-\end{subfigure}%
-}
-
 \newcommand{\plothpsol}[2][]{
 
 \renewcommand{\DataPath}{\FigurePath/#2/hp/p2/unref_0.1/unref_h_0.3}
@@ -2342,34 +2552,34 @@ hide axis,
     \end{axis}
   \end{tikzpicture}
 }
-%==============================================================================================================================================================================
-%: elemental routines
-%==============================================================================================================================================================================
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% OLD
+% ==============
+% elemental routines
+% ==============
 \newcommand{\FormatIntegerTwoDigit}[2]{
-\pgfmathsetbasenumberlength{2}
-\pgfmathbasetodec#2{#1}{10}
+  \pgfmathsetbasenumberlength{2}
+  \pgfmathbasetodec#2{#1}{10}
 }
 
 \newcommand{\FormatIntegerThreeDigit}[2]{
-\pgfmathsetbasenumberlength{3}
-\pgfmathbasetodec#2{#1}{10}
+  \pgfmathsetbasenumberlength{3}
+  \pgfmathbasetodec#2{#1}{10}
 }
 
 \newcommand{\getelem}[4]{
-    \pgfplotstablegetelem{#3}{#2}\of{#1}%
-    \pgfmathtruncatemacro#4{\pgfplotsretval}
-    \pgfplotstableclear{\datatable}
+  \pgfplotstablegetelem{#3}{#2}\of{#1}%
+  \pgfmathtruncatemacro#4{\pgfplotsretval}
+  \pgfplotstableclear{\datatable}
 }
 
 
 \newcommand{\getelemdbl}[4]{
-    \pgfplotstablegetelem{#3}{#2}\of{#1}%
-    \pgfmathsetmacro#4{\pgfplotsretval}    
-    \pgfplotstableclear{\datatable}
+  \pgfplotstablegetelem{#3}{#2}\of{#1}%
+  \pgfmathsetmacro#4{\pgfplotsretval}
+  \pgfplotstableclear{\datatable}
 }
-
-
 
 \newcommand{\findmax}[3]{
   \pgfplotstableread{#1}{\datatable}
@@ -2385,7 +2595,6 @@ hide axis,
   \pgfplotstablegetelem{0}{#2}\of{\sorted}%
   \pgfmathtruncatemacro#3{\pgfplotsretval}
   \pgfplotstableclear{\datatable}
-  %
 }
 
 \newcommand{\findmaxDbl}[3]{
@@ -2394,60 +2603,54 @@ hide axis,
   \pgfplotstablegetelem{0}{#2}\of{\sorted}%
   \pgfmathsetmacro#3{\pgfplotsretval}
   \pgfplotstableclear{\datatable}
-  %
 }
 
 \newcommand{\lastelement}[3]{
-\pgfplotstableread{#1}{\mytable}
-\pgfplotstablegetrowsof{\mytable} %Determine no. of rows
-\pgfmathtruncatemacro{\rows}{\pgfplotsretval}
-\pgfmathtruncatemacro{\lastrow}{\rows-1}
-\pgfplotstablegetelem{\lastrow}{#2}\of{\mytable}
-\pgfmathsetmacro#3{\pgfplotsretval}
+  \pgfplotstableread{#1}{\datatable}
+  \pgfplotstablegetrowsof{\datatable} 
+  \pgfmathtruncatemacro{\rows}{\pgfplotsretval}
+  \pgfmathtruncatemacro{\lastrow}{\rows-1}
+  \pgfplotstablegetelem{\lastrow}{#2}\of{\datatable}
+  \pgfmathsetmacro#3{\pgfplotsretval}
+  \let#3=\pgfplotsretval
+  \pgfplotstableclear{\datatable}
 }
-
 
 \newcommand{\findminDbl}[3]{
   \pgfplotstableread{#1}{\datatable}
   \pgfplotstablesort[sort key={#2},sort cmp={float <}]{\sorted}{\datatable}%
   \pgfplotstablegetelem{0}{#2}\of{\sorted}%
   \pgfmathsetmacro#3{\pgfplotsretval}
+  \let#3=\pgfplotsretval
   \pgfplotstableclear{\datatable}
-  %
 }
-
-
 
 \pgfplotsset{
   log x ticks with fixed point/.style={
       xticklabel={
-        \pgfkeys{/pgf/fpu=true}
-        \pgfmathparse{exp(\tick)}%
-        \pgfmathprintnumber[fixed relative, precision=3]{\pgfmathresult}
-        \pgfkeys{/pgf/fpu=false}
-      }
-  },
+          \pgfkeys{/pgf/fpu=true}
+          \pgfmathparse{exp(\tick)}%
+          \pgfmathprintnumber[fixed relative, precision=3]{\pgfmathresult}
+          \pgfkeys{/pgf/fpu=false}
+        }
+    },
   log y ticks with fixed point/.style={
       yticklabel={
-        \pgfkeys{/pgf/fpu=true}
-        \pgfmathparse{exp(\tick)}%
-        \pgfmathprintnumber[fixed relative, precision=3]{\pgfmathresult}
-        \pgfkeys{/pgf/fpu=false}
-      }
-  }
+          \pgfkeys{/pgf/fpu=true}
+          \pgfmathparse{exp(\tick)}%
+          \pgfmathprintnumber[fixed relative, precision=3]{\pgfmathresult}
+          \pgfkeys{/pgf/fpu=false}
+        }
+    }
 }
-
-
 
 \pgfplotscreateplotcyclelist{custom list style}{%
   color=red, solid, every mark/.append style={solid}, mark=*\\%
-  %color=blue, loosely dotted, every mark/.append style={solid}, mark=triangle*\\%
-  color=blue, solid, every mark/.append style={solid}, mark=triangle*\\%
-  %color=black!50!green,dotted, every mark/.append style={solid}, mark=square*\\%
-  color=black!50!green,solid, every mark/.append style={solid}, mark=square*\\%
-  color=black, solid, every mark/.append style={solid},mark=diamond*\\%dashed
-  color=black!50!red, solid, every mark/.append style={solid}, mark=otimes*\\%densely dotted
-  color=black!50!yellow, solid, every mark/.append style={solid},mark=*\\%loosely dashed
+  color=blue, loosely dotted, every mark/.append style={solid}, mark=triangle*\\%
+  color=black!50!green,dotted, every mark/.append style={solid}, mark=square*\\%
+  color=black, dashed, every mark/.append style={solid},mark=diamond*\\%
+  color=black!50!red, densely dotted, every mark/.append style={solid}, mark=otimes*\\%
+  color=black!50!yellow, loosely dashed, every mark/.append style={solid},mark=*\\%
   color=black!50!blue,densely dashed, every mark/.append style={solid},mark=square*\\%
   color=black!50!magenta,dashdotted, every mark/.append style={solid},mark=otimes*\\%
   color=black!50!orange,dashdotdotted, every mark/.append style={solid},mark=star\\%
@@ -2455,14 +2658,6 @@ hide axis,
 }
 
 \pgfplotsset{%
-%    every axis plot/.append style= {line width=2pt},
-        every axis plot/.append style= ultra thick,
-    cycle list name=custom list style,
-%    log x ticks with fixed point,
-%    legend style={at={(0.5,1.03)},anchor=south},
-%    legend columns=3,
-%    legend pos= outer north east,
-%    legend cell align=left,
-    }
-
-
+  every axis plot/.append style= {line width=2pt},
+  cycle list name=custom list style,
+}

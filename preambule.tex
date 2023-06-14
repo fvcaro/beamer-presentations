@@ -26,6 +26,13 @@
 \pgfplotsset{compat=newest}
 \usepackage{pgfmath, pgffor}
 \usepgfplotslibrary{statistics, colorbrewer, groupplots}
+\usepackage{pgfplotstable}
+\usepackage{booktabs}
+\usepackage{longtable}
+\pgfplotstableset{
+  begin table=\begin{longtable},
+  end table=\end{longtable},
+}
 
 % Animation and page layout packages
 \usepackage{animate}
