@@ -116,10 +116,10 @@
         \begin{subfigure}{\subplotwidth}
           \centering
           \hpmeshes{#2/hp/order_1}{\endIterformatedthree}{\i}%
-          \subcaption{Polynomial orders in the \i-direction}
+          \subcaption{Polynomial orders $p$ in the \i-direction}
         \end{subfigure}
       }
-      \caption{Final $hp$-adapted meshes after the Goal-Oriented Adaptivity}
+      \caption{Final $hp$-adapted meshes.} %after the Goal-Oriented Adaptivity}
     \end{figure}
   }
 }
@@ -264,28 +264,17 @@
 
 %:\plothp
 \newcommand{\plothp}[2]{
-%#1 is the path for the data
-%#2 is the iteration for the mesh around 1% error
 
 \newcommand{\ResultPath}{Results}
 \newcommand{\FigurePath}{Figures}
 \renewcommand{\DataPath}{\FigurePath/#1/hp/p2/unref_0.1/unref_h_0.3}
 \findmax{\DataPath/outputs.txt}{iter}{\endIter}
-%\findmin{\DataPath/outputs.txt}{iter}{\initIter}
 
 \pgfmathparse{subtract(#2,0)} 
 \pgfmathtruncatemacro\index{\pgfmathresult}
 \getelem{\DataPath/outputs.txt}{nr_dof}{\index}{\nrdof}
 \getelemdbl{\DataPath/outputs.txt}{Error}{\index}{\error}
-%
-%\getelemdbl{\DataPath/outputs.txt}{MaxEstim}{\index}{\MaxEstim}
 
-%\getelem{\DataPath/outputs.txt}{nr_dof}{#2}{\nrdof}
-%\getelemdbl{\DataPath/outputs.txt}{Error}{#2}{\error}
-%
-%\getelemdbl{\DataPath/outputs.txt}{MaxEstim}{#2}{\MaxEstim}
-% use the following to display nicely the estimator value
-%\pgfmathprintnumber[std, precision=2]{\MaxEstim}
 \only<+>{f
 \begin{figure}
 \centering
@@ -511,25 +500,6 @@
 \pgfplotstablegetelem{4}{[index]0}\of{\mytable}
 \pgfmathsetmacro\uppwiskertres{\pgfplotsretval}
 
-%  \renewcommand{\DataPath}{#1/#6/mat_check#2}
-%  \pgfplotstableread[header=false]{\DataPath/QoI_error_boxplot.csv}{\mytable}
-%
-% \pgfplotstablegetelem{0}{[index]0}\of{\mytable}
-%\pgfmathsetmacro\lowwiskercua{\pgfplotsretval}
-%
-%\pgfplotstablegetelem{1}{[index]0}\of{\mytable}
-%\pgfmathsetmacro\lowquartilecua{\pgfplotsretval}
-%
-%\pgfplotstablegetelem{2}{[index]0}\of{\mytable}
-%\pgfmathsetmacro\mediancua{\pgfplotsretval}
-%
-%\pgfplotstablegetelem{3}{[index]0}\of{\mytable}
-%\pgfmathsetmacro\uppquartilecua{\pgfplotsretval}
-%
-%\pgfplotstablegetelem{4}{[index]0}\of{\mytable}
-%\pgfmathsetmacro\uppwiskercua{\pgfplotsretval}
-
-
 
 \begin{figure}
   \centering
@@ -587,28 +557,6 @@
           lower whisker=\lowwiskertres
         },
     ] coordinates {};
-%    \addplot+[
-%      boxplot prepared={
-%          median=\mediancua,
-%          upper quartile=\uppquartilecua,
-%          lower quartile=\lowquartilecua,
-%          upper whisker=\uppwiskercua,
-%          lower whisker=\lowwiskercua
-%        },
-%    ] coordinates {};
-%    \addplot+[
-%      boxplot prepared={
-%          median=\mediancin,
-%          upper quartile=\uppquartilecin,
-%          lower quartile=\lowquartilecin,
-%          upper whisker=\uppwiskercin,
-%          lower whisker=\lowwiskercin,
-%%          every box/.style={fill=gray!70}
-%%         every whisker/.style={red,ultra thick},
-%%    	 every median/.style={densely dotted,cyan,ultra thick}
-%        },
-%    ] coordinates {};
-
 
 \node[red] at (1,300) {\large $\sim10$s};
 \node[blue] at (2,300) {\large$\sim1$min};
@@ -622,11 +570,9 @@
 \end{figure}
 }
 
-
 %%%%%%%%%%%%%%%%
 % \boxplotmagoTime
 %%%%%%%%%%%%%%%%
-
 
 \newcommand{\boxplotmagoTime}[5][]{
 
@@ -686,26 +632,6 @@
 \pgfplotstablegetelem{4}{[index]0}\of{\mytable}
 \pgfmathsetmacro\uppwiskertres{\pgfplotsretval}
 
-%  \renewcommand{\DataPath}{#1/#6/mat_check#2}
-%  \pgfplotstableread[header=false]{\DataPath/QoI_error_boxplot.csv}{\mytable}
-%
-% \pgfplotstablegetelem{0}{[index]0}\of{\mytable}
-%\pgfmathsetmacro\lowwiskercua{\pgfplotsretval}
-%
-%\pgfplotstablegetelem{1}{[index]0}\of{\mytable}
-%\pgfmathsetmacro\lowquartilecua{\pgfplotsretval}
-%
-%\pgfplotstablegetelem{2}{[index]0}\of{\mytable}
-%\pgfmathsetmacro\mediancua{\pgfplotsretval}
-%
-%\pgfplotstablegetelem{3}{[index]0}\of{\mytable}
-%\pgfmathsetmacro\uppquartilecua{\pgfplotsretval}
-%
-%\pgfplotstablegetelem{4}{[index]0}\of{\mytable}
-%\pgfmathsetmacro\uppwiskercua{\pgfplotsretval}
-
-
-
 \begin{figure}
   \centering
   \begin{tikzpicture}
@@ -736,9 +662,6 @@
           lower quartile=\lowquartileuno,
           upper whisker=\uppwiskeruno,
           lower whisker=\lowwiskeruno,
-%          every box/.style={very thick,dashed,draw=black,fill=yellow},
-%         every whisker/.style={red,ultra thick},
-%    	 every median/.style={densely dotted,cyan,ultra thick},
         },
     ] coordinates {}; 
     \addplot+[
@@ -748,9 +671,6 @@
           lower quartile=\lowquartiledos,
           upper whisker=\uppwiskerdos,
           lower whisker=\lowwiskerdos,
-%          every box/.style={very thick,dashed,draw=black,fill=yellow},
-%    	 every whisker/.style={red,ultra thick},
-%    	 every median/.style={densely dotted,cyan,ultra thick},
         },
     ] coordinates {};
     \addplot+[
@@ -762,28 +682,6 @@
           lower whisker=\lowwiskertres
         },
     ] coordinates {};
-%    \addplot+[
-%      boxplot prepared={
-%          median=\mediancua,
-%          upper quartile=\uppquartilecua,
-%          lower quartile=\lowquartilecua,
-%          upper whisker=\uppwiskercua,
-%          lower whisker=\lowwiskercua
-%        },
-%    ] coordinates {};
-%    \addplot+[
-%      boxplot prepared={
-%          median=\mediancin,
-%          upper quartile=\uppquartilecin,
-%          lower quartile=\lowquartilecin,
-%          upper whisker=\uppwiskercin,
-%          lower whisker=\lowwiskercin,
-%%          every box/.style={fill=gray!70}
-%%         every whisker/.style={red,ultra thick},
-%%    	 every median/.style={densely dotted,cyan,ultra thick}
-%        },
-%    ] coordinates {};
-
 
 \node[red] at (1,300) {\large $\sim10$min};
 \node[blue] at (2,300) {\large$\sim80$min};
@@ -797,13 +695,9 @@
 \end{figure}
 }
 
-
-
-
 %%%%%%%%%%%%%%%%
 % \boxplotmagoNdof
 %%%%%%%%%%%%%%%%
-
 
 \newcommand{\boxplotmagoNdof}[6][]{
 
@@ -945,25 +839,11 @@
           lower whisker=\lowwiskercua
         },
     ] coordinates {};
-%%    \addplot+[
-%%      boxplot prepared={
-%%          median=\mediancin,
-%%          upper quartile=\uppquartilecin,
-%%          lower quartile=\lowquartilecin,
-%%          upper whisker=\uppwiskercin,
-%%          lower whisker=\lowwiskercin,
-%%          every box/.style={fill=gray!70}
-%%%         every whisker/.style={red,ultra thick},
-%%%    	 every median/.style={densely dotted,cyan,ultra thick}
-%%        },
-%%    ] coordinates {};
   \end{axis}
 \end{tikzpicture}
  \caption{Different number of adaptive grids with a \textbf{stopping criteria of #2 DoFs}.}
 \end{figure}
 }
-
-
 
 \newcommand{\boxplotmagocheck}[7][]{
 
@@ -1221,24 +1101,6 @@
 
 \pgfplotstablegetelem{4}{[index]0}\of{\mytable}
 \pgfmathsetmacro\uppwiskercua{\pgfplotsretval}
-
-% \renewcommand{\DataPath}{#1/#6/Check/mat_check}
-%  \pgfplotstableread[header=false]{\DataPath/QoI_error_boxplot.csv}{\mytable}
-%
-% \pgfplotstablegetelem{0}{[index]0}\of{\mytable}
-%\pgfmathsetmacro\lowwiskercin{\pgfplotsretval}
-%
-%\pgfplotstablegetelem{1}{[index]0}\of{\mytable}
-%\pgfmathsetmacro\lowquartilecin{\pgfplotsretval}
-%
-%\pgfplotstablegetelem{2}{[index]0}\of{\mytable}
-%\pgfmathsetmacro\mediancin{\pgfplotsretval}
-%
-%\pgfplotstablegetelem{3}{[index]0}\of{\mytable}
-%\pgfmathsetmacro\uppquartilecin{\pgfplotsretval}
-%
-%\pgfplotstablegetelem{4}{[index]0}\of{\mytable}
-%\pgfmathsetmacro\uppwiskercin{\pgfplotsretval}
 
 \begin{figure}
   \centering
@@ -2552,7 +2414,152 @@ hide axis,
     \end{axis}
   \end{tikzpicture}
 }
+% ==========
+%\magomate
+% ==========
+\newcommand{\magomate}[3][]{
+  \renewcommand{\DataPath}{\FigurePath/#2/norm0}
+%  \findmax{\DataPath/outputs.txt}{iter}{\endIter}
+%  \FormatIntegerThreeDigit{\endIter}{\endIterformated}
+% \begin{center}
+%  \foreach \idim in {X}{
+%      \begin{subfigure}[t]{0.45\textwidth}
+%    \lefthpmesh{#2/norm0}{\endIterformated}{\idim}
+%    {\caption{Final $hp$-adapted mesh with $p$ in the \ifthenelse{\equal{\idim}{X}}{$x$}{$y$}-direction.}
+%    \label{fig:#2_\idim_final}}
+%  \end{subfigure}
+%  } 
+%  ~
+%  \foreach \idim in {Y}{
+%  \begin{subfigure}[t]{0.45\textwidth}
+%   \righthpmesh{#2/norm0}{\endIterformated}{\idim}
+%    {\caption{Final $hp$-adapted mesh with $p$ in the \ifthenelse{\equal{\idim}{X}}{$x$}{$y$}-direction.}
+%    \label{fig:#2_\idim_final}}
+%  \end{subfigure}
+%  }
+%   \end{center}
+  \findmin{\FigurePath/#2/norm0/outputs.txt}{iter}{\firstIter}
+  \FormatIntegerTwoDigit{\firstIter}{\firstIterformated} 
+  
+  %\begin{subfigure}[t]{0.45\textwidth}
+   %\centering
+   \materials{#2/norm0}{\firstIterformated}{materials_real}{mago}
+    %{\caption{Values for the different materials in the domain.}}
+  %\end{subfigure}
+%  \begin{subfigure}[t]{0.45\textwidth}
+%   \centering
+%   \errormago[#1]{#2}{#3}
+%    {\caption{Evolution of \captionifthenproblem{#3} in the adaptive process.}
+%    \label{fig:error_#2}}
+%  \end{subfigure}
+}
+% =======
+% \materials
+% =======
+\newcommand{\materials}[4]{%
+  \renewcommand{\DataPath}{\FigurePath/#1}
+  
+    	
+      %
+}
 
+%% =======
+%%\plotskew
+%% =======
+\newcommand{\plotskew}[2][]{
+
+  \begin{subfigure}[t]{0.4\textwidth}
+    \centering
+    \vspace{-5.25cm}
+    \skewleft{#2}
+    \vspace{0.90cm}
+    {\caption{Domain illustration ($5 \times 5$ grid)}}
+  \end{subfigure}
+  ~
+ \begin{subfigure}[t]{0.4\textwidth}
+    \centering
+    \skewright{#2}
+    {\caption{$\tcr{\boldsymbol{\sigma(x)}}$ varying 4 orders of magnitude.}}
+  \end{subfigure}
+}
+%% ======
+%%\skewleft
+%% ======
+\newcommand{\skewleft}[2][]{
+
+	\tikzset{/tikz/external/export next=false}
+	
+	\begin{tikzpicture}[x=0.45cm,y=0.45cm]
+			\node(origin) at (0,0) {};
+			\node(end) at (10,10) {};
+			\node(f_int_origin) at (0.5,0.5) {};
+			\node(f_int_end) at (1.5,1.5) {};
+			\node(l_int_origin) at (8.5,8.5) {};
+			\node(l_int_end) at (9.5,9.5) {};
+			
+			\draw [draw=blue,fill=white,thick] (origin) rectangle (end);
+			
+			\draw[] ($(origin)+(2,0)$) -- ($(origin)+(2,10)$);
+			\draw[] ($(origin)+(4,0)$) -- ($(origin)+(4,10)$);
+			\draw[] ($(origin)+(6,0)$) -- ($(origin)+(6,10)$);
+			\draw[] ($(origin)+(8,0)$) -- ($(origin)+(8,10)$);
+			
+			\draw[] ($(origin)+(0,2)$) -- ($(origin)+(10,2)$);
+			\draw[] ($(origin)+(0,4)$) -- ($(origin)+(10,4)$);
+			\draw[] ($(origin)+(0,6)$) -- ($(origin)+(10,6)$);
+			\draw[] ($(origin)+(0,8)$) -- ($(origin)+(10,8)$);
+			
+			\draw [draw=black,fill=white] (f_int_origin) rectangle (f_int_end) node[pos=0.5] {$\Omega_f$};
+			\draw [draw=black,fill=white] (l_int_origin) rectangle (l_int_end) node[pos=0.5] {$\Omega_l$};
+		\end{tikzpicture}
+}
+%% =======
+%%\skewright
+%% =======
+\newcommand{\skewright}[2][]{
+	\renewcommand{\DataPath}{\FigurePath/#2/norm0}
+	
+	\findmin{\FigurePath/#2/norm0/outputs.txt}{iter}{\firstIter}
+  	\FormatIntegerTwoDigit{\firstIter}{\firstIterformated} 
+  
+	\getelemdbl{\DataPath/mago_ColorbarValues.dat}{min_value}{0}{\scaleMin}
+  	\getelemdbl{\DataPath/mago_ColorbarValues.dat}{max_value}{0}{\scaleMax}
+  	\getelemdbl{\DataPath/mago_ColorbarValues.dat}{mean_value}{0}{\scaleMean}
+  
+  \pgfplotsset{%
+    colormap={paraview}{rgb=(0.231373, 0.298039, 0.752941) rgb=(0.865003, 0.865003, 0.865003) rgb=(0.705882, 0.0156863, 0.14902)}%
+  }%
+  \pgfplotsset{colormap name={paraview}}%
+  
+  \begin{tikzpicture}
+      \begin{axis}[name=master,
+          width=\textwidth,height=\textwidth,
+          enlargelimits=false,
+          xlabel=$x$,
+          ylabel=$y$,
+          xlabel near ticks,
+          ylabel near ticks,
+          colorbar horizontal,
+          colorbar style={%
+              xtick={0.1,500.05,1000},
+              title={Value of $\sigma(x)$ (log scale)},
+              at={(master.above north west)},anchor=south west,
+              yshift=2pt,
+              title style={
+                  yshift=5pt
+                },
+              yshift=0.2em,
+              xticklabel pos=upper,
+            },
+          point meta min=0.1,
+          point meta max=1000,
+        ]
+        
+       \addplot [forget plot] graphics[xmin=0,xmax=1,ymin=0,ymax=1] {\DataPath/mago_\firstIterformated_materials_real.png}; 
+
+      \end{axis}
+    \end{tikzpicture}
+}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% OLD
 % ==============
@@ -2645,9 +2652,9 @@ hide axis,
 }
 
 \pgfplotscreateplotcyclelist{custom list style}{%
-  color=red, solid, every mark/.append style={solid}, mark=*\\%
-  color=blue, loosely dotted, every mark/.append style={solid}, mark=triangle*\\%
-  color=black!50!green,dotted, every mark/.append style={solid}, mark=square*\\%
+  color=red, solid, every mark/.append style={solid}, ,mark size=4.0pt,mark=o\\%
+  color=blue, loosely dotted, every mark/.append style={solid}, dashed,mark size=3.0pt,mark=square\\%
+  color=gray!20!black!40, densely dashed, every mark/.append style={solid}, mark size=2.5pt, mark=triangle\\%
   color=black, dashed, every mark/.append style={solid},mark=diamond*\\%
   color=black!50!red, densely dotted, every mark/.append style={solid}, mark=otimes*\\%
   color=black!50!yellow, loosely dashed, every mark/.append style={solid},mark=*\\%
