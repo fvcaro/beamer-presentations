@@ -382,7 +382,7 @@
       width=0.8\plotwidth,
 %      ymin=1e-2,
 %      ymax=1e1,
-      xlabel={Number of \textbf{testing} samples},
+      xlabel={Number of \textbf{validation} samples},
       ylabel={Relative error in the QoI ($\%$)}
     ]
      \addplot+[
@@ -1193,9 +1193,6 @@
 
 \FormatIntegerTwoDigit{\endIterh}{\endIterhformated}
 
-
-
-
 \begin{center}
 
 \begin{figure}
@@ -1217,7 +1214,7 @@
 \centering
 % % %
 \errorplotlogUnrefBorrar{Unref/#1/hp/order_1}{\i}
-\subcaption{ Evolution of relative error}
+\subcaption{ Evolution of the relative error}
 \end{subfigure}
 \only<1->{\caption{Adaptive process for a Helmholtz problem}}
 }%
@@ -1598,11 +1595,7 @@ legend columns=-1
 
 \newcommand{\errorplotlogUnrefBorrar}[2]{
 %
-
-
 \renewcommand{\DataPath}{\FigurePath/#1}
-
-
 %
 \findmax{\DataPath/outputs.txt}{nr_dof}{\maxdof}
 \findmin{\DataPath/outputs.txt}{nr_dof}{\mindof}
@@ -1618,9 +1611,9 @@ legend columns=-1
 %\pgfplotsset{ log y ticks with fixed point,}
 
 \begin{axis}[name=mainerrorplot,
-xlabel={Number of dof},
+xlabel={Number of DoF},
 %x dir=reverse,
-ylabel=Relative error in \%,
+ylabel=Relative error in the QoI (\%),
 ymode=log,
 xmode=log,
 %extra y ticks={1e3},
@@ -2652,11 +2645,11 @@ hide axis,
 }
 
 \pgfplotscreateplotcyclelist{custom list style}{%
-  color=red, solid, every mark/.append style={solid}, ,mark size=4.0pt,mark=o\\%
-  color=blue, loosely dotted, every mark/.append style={solid}, dashed,mark size=3.0pt,mark=square\\%
-  color=gray!20!black!40, densely dashed, every mark/.append style={solid}, mark size=2.5pt, mark=triangle\\%
-  color=black, dashed, every mark/.append style={solid},mark=diamond*\\%
-  color=black!50!red, densely dotted, every mark/.append style={solid}, mark=otimes*\\%
+  color=red, solid, every mark/.append style={solid},mark size=4.0pt,mark=o\\%
+  color=blue, solid, every mark/.append style={solid},mark size=3.0pt,mark=square\\%
+  color=gray!20!black!40, solid, every mark/.append style={solid}, mark size=2.5pt, mark=triangle\\%
+  color=black, solid, every mark/.append style={solid},mark=diamond*\\%
+  color=black!50!red, solid, every mark/.append style={solid}, mark=otimes*\\%
   color=black!50!yellow, loosely dashed, every mark/.append style={solid},mark=*\\%
   color=black!50!blue,densely dashed, every mark/.append style={solid},mark=square*\\%
   color=black!50!magenta,dashdotted, every mark/.append style={solid},mark=otimes*\\%

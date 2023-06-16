@@ -15,8 +15,8 @@
 \usefonttheme{structurebold}
 
 % Footline templates
-\defbeamertemplate{footline}{centered page number}{...}
-\defbeamertemplate{footline}{centered frame number}{...}
+\defbeamertemplate{footline}{centered page number}{ }
+\defbeamertemplate{footline}{centered frame number}{ }
 \setbeamertemplate{footline}[centered page number]
 \setbeamertemplate{footline}[centered frame number]
 
@@ -116,14 +116,9 @@
         \centering
         \textbf{\textcolor{red}{Objective}}: To obtain the \textbf{conductivity/resistivity} distribution of the Earth's subsurface.
     \end{block}
+\note[Deep Learning inversion has shown promising results in solving CSEM and MT problems, but it requires large databases for training.]
+
 \end{frame}
-%        \begin{itemize}
-%  		\item Controlled-Source Electromagnetic (CSEM) and Magnetotelluric (MT) methods are widely used geophysical techniques.
-%  		\item CSEM involves the injection of electromagnetic signals into the Earth's subsurface, while MT measures naturally occurring electromagnetic fields.
-%  		\item These methods provide valuable insights into the subsurface's electrical properties, such as resistivity and conductivity.
-%  		\item CSEM and MT problems involve the estimation of subsurface parameters from measured data, typically through inverse modeling.
-%  		\item Deep Learning inversion has shown promising results in solving CSEM and MT problems, but it requires large databases for training.
-%	\end{itemize}
 %================================================================================================================
 \begin{frame}
 	\frametitle{Motivation: Preliminaries}
@@ -147,90 +142,42 @@
 			\end{array}
 		\end{equation*}
 	\end{block}
+	
+\note[Explain that the physical properties of interest are the conductivity distribution in the Earth's subsurface. The measurements or observations are obtained from the physical system. Explain that the forward operator maps the physical properties in the model space to the corresponding measurements in the data space. It represents the physical process or phenomenon that relates the model properties to the observed data. Explain that the inverse operator performs the inverse process, mapping the measured data back to the physical properties in the model space. It is used to estimate or reconstruct the desired properties from the available measurements.  Mention that the inverse operator ($\calI$) can be challenging to construct analytically due to the complexity of the problem. Introduce the idea of using a neural network ($\calI_{\phi}$) as an approximation of the inverse operator.]
 
-	\begin{block}{}
-		\centering
-		\textbf{\tcr{Goal}}: To build the \textbf{Inverse Operator} (not only to evaluate it).
-	\end{block}
-%\begin{itemize}
-%  \item Introduction to the problem: Start by introducing the overall problem or field of study, such as electromagnetic applications in geophysics. Briefly explain the importance of understanding the subsurface properties like conductivity/resistivity.
-%  
-%  \item Model Space and Data Space: Discuss the concept of the model space ($\boldsymbol{m}$) and the data space ($\boldsymbol{d}$). Explain that the model space represents the physical properties of interest, such as the conductivity distribution in the Earth's subsurface. The data space represents the measurements or observations obtained from the physical system.
-%  
-%  \item Forward Operator ($\calF$): Introduce the concept of the forward operator. Explain that the forward operator maps the physical properties in the model space to the corresponding measurements in the data space. It represents the physical process or phenomenon that relates the model properties to the observed data.
-%  
-%  \item Inverse Operator ($\calI$): Discuss the inverse operator, which is the key focus of the frame. Explain that the inverse operator performs the inverse process, mapping the measured data back to the physical properties in the model space. It is used to estimate or reconstruct the desired properties from the available measurements.
-%  
-%  \item Neural Network Approximation: Mention that the inverse operator ($\calI$) can be challenging to construct analytically due to the complexity of the problem. Introduce the idea of using a neural network ($\calI_{\phi}$) as an approximation of the inverse operator. Briefly explain that the neural network can learn the mapping between the measured data and the physical properties through training.
-%  
-%  \item Goal: Emphasize that the main goal is not only to evaluate the inverse operator but also to build it. Explain that constructing the inverse operator involves developing a neural network model that can effectively learn the mapping and accurately estimate the physical properties from the measurements.
-%  
-%  \item Importance and Applications: Discuss the importance of building the inverse operator in the context of electromagnetic applications. Highlight that an accurate and reliable inverse operator enables the estimation of subsurface properties, which is crucial for various fields like geophysics, environmental studies, and resource exploration.
 %\end{itemize}
 \end{frame}
 %================================================================================================================
 \begin{frame}
     \frametitle{Motivation: Generation of Massive Databases}    
+\vspace{-2mm}
+
+\begin{block}{Objective}
+	\centering
+	Building the \textbf{Inverse Operator} (not just evaluating it).
+\end{block}
+
+\begin{block}{Loss Function and Training}
+Find $\mathcal{I}_{\phi^*}$ such that
+\[
+\phi^* = \argmin_{\phi \in \boldsymbol{\Phi}} \sum \left\| (\textcolor{red}{\mathcal{F}} \circ \mathcal{I}_{\phi})(\boldsymbol{d}_i) - \boldsymbol{d}_i \right\|^2
+\]
+where evaluating $\textcolor{red}{\mathcal{F}}$ is \textcolor{red}{expensive}!
+\end{block}
     
-    \vspace{-2mm}
-    
-    \begin{block}{Definition of the Loss Function}
-        \[
-        \calI_{\phi^*} \coloneqq \argmin_{\calI_{\phi},\phi \in \boldsymbol{\Phi}} \sum \left\| (\tcr{\calF} \circ \calI_{\phi})(\boldsymbol{d}_i) - \boldsymbol{d}_i \right\| \rightarrow \text{Evaluating } \tcr{\calF} \text{ is \tcr{expensive}!}
-        \]
-    \end{block}
-        
-    \begin{block}{Difficulties}
-        \begin{enumerate}
-            \item We need a Forward Solver \tcr{$\calF$} for \tcr{any parametrization} (model)
-            \item A huge number of evaluations needed to train the DNN
-        \end{enumerate}
-    \end{block}
-    
-    \begin{block}{Alternatives $\rightarrow$ Motivation}
-        \begin{enumerate}
-            \item Approximate the Forward Operator with a Neural Network
-            \item \underline{To develop a \tcr{fast Forward Solver valid for any model parameters}}
-        \end{enumerate}
-    \end{block}
-    
-    \begin{block}{Our Choice}
-        \centering
-        $hp$-Adaptive Finite Element Method
-    \end{block}
-    
-%    \begin{itemize}
-%        \item \textbf{Definition of the Loss Function:}
-%        \begin{itemize}
-%        \item Introduce the concept of the loss function in the context of generating massive databases.
-%        \item Present the mathematical formulation of the loss function, denoted as $\calI_{\phi^*}$.
-%        \item Explain that the goal is to minimize the difference between the output of the composition $(\tcr{\calF} \circ \calI)$ and the target data $\boldsymbol{m}_i$.
-%        \item Highlight that evaluating the forward operator $\tcr{\calF}$ is expensive.
-%        \end{itemize}
-%    \end{frame}
-%
-%    \item \textbf{Difficulties:}
-%    \begin{itemize}
-%        \item Discuss the challenges faced in generating massive databases.
-%        \item Emphasize the need for a forward solver $\calF$ that can handle any parametrization or model.
-%        \item Mention the large number of evaluations required to train the deep neural network (DNN) used in the process.
-%    \end{itemize}
-%    
-%    \item \textbf{Alternatives:}
-%    \begin{itemize}
-%        \item Present alternative approaches to address the difficulties mentioned.
-%        \item Propose approximating the forward operator $\calF$ with a neural network.
-%        \item Highlight the importance of developing a fast forward solver that is valid for any model parameters.
-%    \end{itemize}
-%    
-%    \item \textbf{Our Choice:}
-%    \begin{itemize}
-%        \item Introduce the $hp$-Adaptive Finite Element Method as your chosen approach.
-%        \item Explain the benefits and advantages of using this method in generating massive databases.
-%        \item Emphasize how the $hp$-Adaptive Finite Element Method overcomes the difficulties and provides efficient solutions.
-%    \end{itemize}
-%    
-%    \end{itemize}
+\begin{block}{Difficulties}
+    \begin{enumerate}
+        \item We need a Forward Solver \textcolor{red}{$\mathcal{F}$} for \textcolor{red}{any parameterization} (model).
+        \item \textcolor{red}{A huge number} of evaluations needed \textcolor{red}{to train} the DNN.
+    \end{enumerate}
+\end{block}
+
+\begin{block}{Solution}
+    \begin{enumerate}
+        \item  \textcolor{red}{Approximate} the Forward Operator with a  \textcolor{red}{Neural Network}.
+    \end{enumerate}
+\end{block}
+
 \end{frame}
 %================================================================================================================
 \begin{frame}
@@ -238,148 +185,14 @@
 	\tableofcontents
 \end{frame}
 %================================================================================================================
-\section{Our $hp$-Adaptive Finite Element Method Strategy}
+\section{A Painless $hp$-Adaptive FEM Strategy for Non-parametric PDEs}
 %================================================================================================================
 \begin{frame}
     \frametitle{Outline}
     \tableofcontents[currentsection]
 \end{frame}
 %================================================================================================================
-\begin{frame}
-\frametitle{Goal-Oriented Adaptivity}
-
-\begin{block}{}
-\begin{figure}
-	\centering
-	\begin{tikzpicture}[x=0.14cm,y=0.14cm]
-	
-	\node(origin) at (0,0) {};
-	\node(end) at ($(origin)+(10,10)$) {};
-	
-	\node(f_int_origin) at (0.5,0.5) {};
-	\node(f_int_end) at (1.5,1.5) {};
-	\node(l_int_origin) at (8.5,8.5) {};
-	\node(l_int_end) at (9.5,9.5) {};
-	
-	\node(layer1) at ($(origin)+(0,-0)$) {};
-	\node(layer1_end) at ($(layer1)+(10,10)$) {};
-	
-	\draw [draw=black,fill=white,thick] (origin) rectangle (end);
-	\draw[] ($(origin)+(5,0)$) -- ($(origin)+(5,10)$);
-	\draw[] ($(origin)+(0,5)$) -- ($(origin)+(10,5)$);
-	\node(s1) at ($(origin)+(2.5,2.5)$) {$\sig_3$};
-	\node(s2) at ($(origin)+(7.5,2.5)$) {$\sig_4$};
-	\node(s3) at ($(origin)+(2.5,7.5)$) {$\sig_1$};
-	\node(s4) at ($(origin)+(7.5,7.5)$) {$\sig_2$};
-	\node(s5) at ($(origin)+(5,-2)$) {$\m$}; 
-	\node(ss) at ($(origin)+(30,5)$) {$\rightarrow$ \hspace{3mm} Construction of $1$ $hp$-grid};
-	\node(sss) at ($(origin)+(-24,7.5)$) {$\m = \{\sig_1, \ldots, \sig_N\}$};
-	\node(ssss) at ($(origin)+(-24,2.5)$) {$1$ sample of model parameters};
-	
-	
-	\end{tikzpicture}
-\end{figure}
-\end{block}
-
-\begin{block}{The objective in Goal-Oriented Adaptivity}
-	To produce a space $\H_{\calF}$ with minimum dimension such that
-	\vspace{-2mm}
-	\begin{align}
-	\abs{l(u^{\calF})-l(u)} < \varepsilon, \quad \text{for any } \varepsilon > 0,
-	\end{align}
-	where \tcr{$l(\cdot)$} is a linear and continuous functional that defines the \tcr{Quantity of Interest} (QoI).
-\end{block}
-
-\begin{block}{Discrete Variational Formulations}
-	Given a model $\m$, find $\um^{\calF}, \vm^{\calF} \in \H_{\calF}$ such that
-	\vspace{-1mm}
-	\begin{equation*}
-	\begin{array}{lrcl}
-	\text{Forward Problem:} \hspace{15mm} & b(\um^{\calF},\phi^{\calF}) & = & f(\phi^{\calF}), \quad \forall \phi^{\calF} \in \H_{\calF},   \\[2mm]
-	\text{Adjoint Problem:} \hspace{15mm} & b(\phi^{\calF},\vm^{\calF}) & = & l(\phi^{\calF}), \quad \forall \phi^{\calF} \in \H_{\calF}. \\
-	\end{array}
-	\end{equation*}
-\end{block}
-
-%Explain the process of constructing a $1$ $hp$-grid, as depicted in the figure. Elaborate on the different elements $\sig_1, \sig_2, \sig_3, \sig_4$, and $\m$, which represent the grid elements and the model parameters, respectively. Emphasize that the goal is to construct an optimized grid based on the given model parameters.
-
-%Emphasize the significance of minimizing the dimension of the adapted space $\H_{\calF}$ while maintaining the desired accuracy in the quantity of interest. Explain how this optimization process allows for efficient computations and resource utilization.
-
-\end{frame}
-%================================================================================================================
-\begin{frame}
-	\frametitle{Goal-Oriented Adaptivity}
-\begin{block}{Element-Wise ($K$) Error Indicators}
-	We obtain error indicators $\eta_K$ that measure the importance of each basis function.
-\end{block}
-
-\begin{figure}
-	\centering
-	\begin{tikzpicture}[x=0.45cm,y=0.5cm]
-	
-		\node(origin) at (0,0) {};
-		\node(end) at ($(origin)+(10,10)$) {};
-		
-		\node(f_int_origin) at (0.5,0.5) {};
-		\node(f_int_end) at (1.5,1.5) {};
-		\node(l_int_origin) at (8.5,8.5) {};
-		\node(l_int_end) at (9.5,9.5) {};
-		
-		\node(layer1) at ($(origin)+(13,-0)$) {};
-		\node(layer1_end) at ($(layer1)+(10,10)$) {};
-		
-		\draw [draw=black,fill=white,very thick] (origin) rectangle (end);
-		\draw [draw=black,fill=brown!20,very thick] (origin) rectangle ($(origin)+(5,5)$);
-		\draw [draw=black,fill=gray!20,very thick] ($(origin)+(5,0)$) rectangle ($(origin)+(10,5)$);
-		\draw [draw=black,fill=purple!20,very thick] ($(origin)+(0,5)$) rectangle ($(origin)+(5,10)$);
-		\draw [draw=black,fill=orange!40,very thick] ($(origin)+(5,5)$) rectangle ($(origin)+(10,10)$);
-		
-		\node(s1) at ($(origin)+(2.5,2.5)$) {\Large{$\sig_3$}};
-		\node(s2) at ($(origin)+(7.5,2.5)$) {\Large{$\sig_4$}};
-		\node(s3) at ($(origin)+(2.5,7.5)$) {\Large{$\sig_1$}};
-		\node(s4) at ($(origin)+(7.5,7.5)$) {\Large{$\sig_2$}};
-		\node(s5) at ($(origin)+(5,-1)$) {\tcr{(a)} Model Parameters Grid};
-		
-		\node(arr) at ($(layer1)+(-1.5,5)$) {$\rightarrow$}; 
-		\draw [draw=black,fill=white,very thick] (layer1) rectangle (layer1_end);
-		\draw [draw=black,fill=brown!20,very thick] (layer1) rectangle ($(layer1)+(5,5)$);
-		\draw [draw=black,fill=gray!20,very thick] ($(layer1)+(5,0)$) rectangle ($(layer1)+(10,5)$);
-		\draw [draw=black,fill=purple!20,very thick] ($(layer1)+(0,5)$) rectangle ($(layer1)+(5,10)$);
-		\draw [draw=black,fill=orange!40,very thick] ($(layer1)+(5,5)$) rectangle ($(layer1)+(10,10)$);
-		
-		\draw[] ($(layer1)+(2.5,0)$) -- ($(layer1)+(2.5,10)$);
-		\draw[] ($(layer1)+(7.5,0)$) -- ($(layer1)+(7.5,10)$);
-		\draw[] ($(layer1)+(0,2.5)$) -- ($(layer1)+(10,2.5)$);
-		\draw[] ($(layer1)+(0,7.5)$) -- ($(layer1)+(10,7.5)$);
-		
-		\node(e) at ($(layer1)+(1.25,1.25)$) {\Large{$\eta_{13}$}};
-		\node(e) at ($(layer1)+(3.75,1.25)$) {\Large{$\eta_{14}$}};
-		\node(e) at ($(layer1)+(6.25,1.25)$) {\Large{$\eta_{15}$}};
-		\node(e) at ($(layer1)+(8.75,1.25)$) {\Large{$\eta_{16}$}};
-		
-		\node(e) at ($(layer1)+(1.25,3.75)$) {\Large{$\eta_{9}$}};
-		\node(e) at ($(layer1)+(3.75,3.75)$) {\Large{$\eta_{10}$}};
-		\node(e) at ($(layer1)+(6.25,3.75)$) {\Large{$\eta_{11}$}};
-		\node(e) at ($(layer1)+(8.75,3.75)$) {\Large{$\eta_{12}$}};
-		
-		\node(e) at ($(layer1)+(1.25,6.25)$) {\Large{$\eta_{4}$}};
-		\node(e) at ($(layer1)+(3.75,6.25)$) {\Large{$\eta_{5}$}};
-		\node(e) at ($(layer1)+(6.25,6.25)$) {\Large{$\eta_{6}$}};
-		\node(e) at ($(layer1)+(8.75,6.25)$) {\Large{$\eta_{7}$}};
-		
-		\node(e) at ($(layer1)+(1.25,8.75)$) {\Large{$\eta_{1}$}};
-		\node(e) at ($(layer1)+(3.75,8.75)$) {\Large{$\eta_{2}$}};
-		\node(e) at ($(layer1)+(6.25,8.75)$) {\Large{$\eta_{3}$}};
-		\node(e) at ($(layer1)+(8.75,8.75)$) {\Large{$\eta_{4}$}};
-		
-		\node(l_m3) at ($(layer1)+(5,-1)$) {\tcr{(b)} FEM Grid (Conforming with Parameters)};
-		
-	\end{tikzpicture}
-\end{figure}
-
-\end{frame}
-%================================================================================================================
-\begin{frame}{Our Painless $hp$-Adaptive FEM: Coarsening Strategy}
+\begin{frame}{A Painless $hp$-Adaptive Strategy for Non-PPDEs}
   \tikzset{/tikz/external/export next=false}
   \begin{center}
     \begin{tikzpicture}
@@ -395,63 +208,60 @@
     \end{tikzpicture}
   \end{center}
 
-  \begin{thebibliography}{10}
-    \beamertemplatearticlebibitems
-    \scriptsize
-    \bibitem{darrigrand2020painless}
-    V. Darrigrand, D. Pardo, T. Chaumont-Frelet, I. G{\'o}mez-Revuelto, L. E. Garcia-Castillo
-    \newblock A painless automatic $hp$-adaptive strategy for elliptic problems
-    \newblock \emph{Finite Elements in Analysis and Design}, 2020
-  \end{thebibliography}
+ \begin{thebibliography}{10}
+\beamertemplatearticlebibitems
+\scriptsize
+\bibitem{darrigrand2020painless}
+V. Darrigrand, D. Pardo, T. Chaumont-Frelet, I. G{\'o}mez-Revuelto, L. E. Garc{\'i}a-Castillo
+\newblock A painless automatic $hp$-adaptive strategy for elliptic problems
+\newblock \emph{Finite Elements in Analysis and Design}, 2020.
+\beamertemplatearticlebibitems
+\scriptsize
+\bibitem{caro2022painless}
+F. V. Caro, V. Darrigrand, J. Alvarez-Aramberri, E. Alberdi, D. Pardo
+\newblock A painless multi-level automatic goal-oriented $hp$-adaptive coarsening strategy for elliptic and non-elliptic problems
+\newblock \emph{Computer Methods in Applied Mechanics and Engineering}, 2022.
+\end{thebibliography}
 \end{frame}
 %================================================================================================================
 \begin{frame}[c]
-	\frametitle{Illustration of an $hp$-GOA FEM: Helmholtz Equation}
+	\frametitle{Illustrating the Goal-Oriented $hp$-Adaptive Strategy}
 	\begin{figure}[t!]
    		\goasolutions[unitsquare]{Helm2DGOA}{abs}
 	\end{figure}
 \end{frame}
 %================================================================================================================
 \begin{frame}[c]
-	\frametitle{Illustration of an $hp$-GOA FEM: Helmholtz Equation}
+	\frametitle{Illustrating the Goal-Oriented $hp$-Adaptive Strategy}
   	\plothpmeshes[]{Helm2DGOA}
 \end{frame}
 %================================================================================================================
 \begin{frame}
-	\frametitle{Illustration of an $hp$-Adaptive FEM: Helmholtz Equation}
+	\frametitle{Illustrating the Goal-Oriented $hp$-Adaptive Strategy}
 	\plothpunrefmago{hpmago}
 \end{frame}
 %================================================================================================================
-\begin{frame}{Our Painless $hp$-Adaptive FEM: Main Ingredients}
-\textbf{\tcr{Competitive} in all the tested problems}
+\begin{frame}{A Painless $hp$-Adaptive Strategy: Key Features}
+\textbf{\tcr{Robust} performance across various problem types}
 \setlength{\itemsep}{1mm}
 \begin{enumerate}
-  \item 2D and 3D problems.
-  \item Elliptic and non-elliptic equations: Poisson, Helmholtz, and Convection-Dominated.
-  \item Energy-Norm Adaptivity and Goal-Oriented Adaptivity.
+\item Successfully handles 2D and 3D problems.
+\item Effective for both elliptic and non-elliptic equations, including Poisson, Helmholtz, and Convection-Dominated problems.
+\item Accommodates both Energy-Norm Adaptivity and Goal-Oriented Adaptivity.
 \end{enumerate}
 
 \vspace{5mm}
 
 \textbf{Advantages}
 \begin{enumerate}
-  \item \alert{Flexible} code: $hp$-refinements, $h$-refinements (any $p$), $p$-refinements (any $h$).
-  \item The type of refinements is left to the user (greater flexibility).
-  \item \tcr{Light implementation}: we operate \textbf{only with a single mesh}.
-  \item The refining/unrefining steps \alert{correct} previous (preasymptotic) possible \alert{mistakes}.
+\item \alert{Flexible} code: Supports $hp$-refinements, $h$-refinements (with any $p$), and $p$-refinements (with any $h$).
+\item Allows the user to choose the desired type of refinements, providing greater flexibility.
+\item \tcr{Efficient implementation}: Utilizes a single mesh, reducing computational overhead.
+\item The refining/unrefining steps \alert{rectify} potential \alert{errors} made during earlier (pre-asymptotic) stages.
 \end{enumerate}
-
-\vspace{2mm}
-\begin{thebibliography}{10}
-		\beamertemplatearticlebibitems
-		\scriptsize
-		\bibitem{caro2022painless}
-		F.V.Caro, V. Darrigrand, J. Alvarez-Aramberri, E. Alberdi, D. Pardo
-		\newblock A Painless Multi-level Automatic Goal-Oriented $hp$-Adaptive Coarsening Strategy for Elliptic and non-Elliptic Problems. \emph{Computer Methods in Applied Mechanics and Engineering}, 2022.
-	\end{thebibliography}
 \end{frame}
 %================================================================================================================
-\section{Extension to Parametric PDEs: One Grid for all Model Parameteres}
+\section{Extension to Parametric PDEs: One Grid for all Model Parameters}
 %================================================================================================================
 \begin{frame}
     \frametitle{Outline}
@@ -459,19 +269,19 @@
 \end{frame}
 %================================================================================================================
 \begin{frame}
-	\frametitle{One Grid to Rule Them All}
-	
-	\vspace{-1mm}
-	\begin{block}{Definitions}
-	\begin{itemize}
-	
-	\item   $\m_1 = \{\sig_1, \ldots, \sig_N \}$ set of model parameters that parametrize one problem.
-	 \item  $S$ possibly different samples of parameters:  $\m= \{\m_1, \ldots , \m_S \}$
-	\end{itemize}
+    \frametitle{One Grid for Multiple Parameters}
+    
+    \vspace{-1mm}
+    \begin{block}{Definitions}
+    \begin{itemize}
+    \item Let $\m = \{\sig_1, \ldots, \sig_N \}$ be the set of model parameters that parametrize one problem.
+    \item Consider $S$ samples of parameters: $\M = \{\m_1, \ldots , \m_S \}$.
+    \end{itemize}
+    \end{block}
+    
+    \vspace{-1mm}
+    
 
-	\vspace{-1mm}
-
-\end{block}
 	\begin{figure}
          	\centering
     \begin{tikzpicture}[x=0.14cm,y=0.14cm]
@@ -541,31 +351,32 @@
 
 	\vspace{-1mm}
 
-\begin{block}{Difficulties: High computational cost}
-    	\begin{itemize}
-		\item Building \textbf{$\boldsymbol{hp}$-grid is computationally expensive} in general.
-		\item $S$ can be \textbf{huge} (100k problems).
-	\end{itemize}
- \end{block}
+\begin{block}{Challenge: High Computational Cost}
+\begin{itemize}
+\item Building an \textbf{$\boldsymbol{hp}$-grid is computationally expensive} in general.
+\item The number of problems $S$ can be \textbf{huge} (e.g., 100k problems).
+\end{itemize}
+\end{block}
 
 	\vspace{1mm}
 
 \begin{block}{Proposed Solution: One Grid to Rule Them All}
-	    \textbf{Objective}: To build a \tcr{\underline{\textbf{single}} $hp$-mesh} that provides \tcr{accurate solutions for all $\m$ at once}.
-	  \end{block}
+\textbf{Objective}: Build a \tcr{\underline{\textbf{single}} $hp$-mesh} that provides \tcr{accurate solutions for all $\m$ at once}.
+\end{block}
 
-\note[Moreover, due to the singularities or discontinuities in the deriva- tives along with material interfaces that the solutions may exhibit, these problems often demand rather fine or complex finite element grids to accurately describe them \\ enormous number of problems that DNNs employ for approximating the inverse operator in the training process, it becomes necessary to design efficient numerical methods that maintain the computational cost under control.]
+\note[Moreover, due to the singularities or discontinuities in the derivatives along with material interfaces that the solutions may exhibit, these problems often demand rather fine or complex finite element grids to accurately describe them \\ enormous number of problems that DNNs employ for approximating the inverse operator in the training process, it becomes necessary to design efficient numerical methods that maintain the computational cost under control.]
 
 \end{frame}
 %================================================================================================================
 \begin{frame}
 	\frametitle{MAGO: (M)ulti-(A)daptive (G)oal-(O)riented}
 	
-	\vspace{-1mm}
+	\vspace{-1mm}	
+
 \begin{block}{Objective}
-	To control the relative error:
+	To control the relative error, ensuring that it falls within a specified tolerance $TOL$:
 	\begin{equation}
-   		\max_i{\abs{ \frac{l(\umi^{\calF}) - l(\umi)}{l(\umi)}} }< TOL
+		\max_{i, \{\m_i\}_{i=1}^S} \left\{ \frac{\abs{l(\umi^F)-l(\umi^C)}}{\abs{l(\umi^F)}}\right\} < TOL.
 	\end{equation}
 \end{block}
 
@@ -573,11 +384,12 @@
 
 \begin{block}{Coarsening Step with a Single Mesh}
 	\vspace{2mm}
+	We employ a coarsening step using a single mesh, which involves the following stages:
 	\begin{enumerate}
-		\item Solve the FEM problem for each $\boldsymbol{m}_i$
-		\item Compute element-wise error indicators for each $\boldsymbol{m}_i$
-		\item Combine all element-wise error indicators into one
-		\item Unrefine the mesh
+		\item Solve the finite element method (FEM) problem for each $\boldsymbol{m}_i$.
+		\item Compute element-wise error indicators for each $\boldsymbol{m}_i$.
+		\item Combine all the element-wise error indicators into a unified measure.
+		\item Perform mesh unrefinement based on the combined error measure.
 	\end{enumerate}
 \end{block}
 
@@ -793,7 +605,7 @@
 	
 	\item \textbf{Precomputation and Parallelization}:
 	\begin{itemize}
-		\item Precompute integrals of stiffness matrix and right-hand sides.
+		\item Precompute integrals of stiffness matrix, right-hand sides and error indicators.
 		\item Parallelize the adaptive process and database generation.
 		\item Compute the analysis part (symbolic factorization) once.
 	\end{itemize}
@@ -809,7 +621,7 @@
 \end{frame}
 %================================================================================================================
 \begin{frame}
-	\frametitle{Poisson Problem}
+	\frametitle{Poisson Problem: $-\nabla \cdot ( \tcr{\boldsymbol{\sigma(x)}} \nabla u) = \mathds{1}_{\Omega_{f}}$}
 	\begin{figure}[t!]
   		\plotskew{mate}
 	\end{figure}
@@ -832,7 +644,7 @@
 		\begin{tikzpicture}
 			\begin{axis}[
 				xlabel={Number of DoF},
-				ylabel=Relative error in \% (log scale),
+				ylabel=Relative error in the QoI (\%),
 				ymode=log,
 				xmode=log,
 				ymin=-10,
@@ -866,77 +678,11 @@
 	\end{figure}
 \end{frame}
 %================================================================================================================
-\begin{frame}{MAGO: Meaning of a Box Plot}
-	\begin{figure}
-		\centering
-		\begin{tikzpicture}
-		\begin{axis}[
-			boxplot/draw direction=y,
-			boxplot/variable width,
-			x axis line style={opacity=0},
-			axis x line*=bottom,
-			axis y line=left,
-			enlarge y limits,
-			xtick={1},
-			xticklabels={},
-			height=\plotheight,
-			width=0.8\plotwidth,
-			ymin=-0.1,
-			xmax=2,
-			ymax=10,
-			ylabel={Relative error in the QoI (\%)},
-		]
-		
-		\addplot+[
-			boxplot prepared={
-				median=5,
-				upper quartile=7,
-				lower quartile=3,
-				upper whisker=10,
-				lower whisker=1,
-				every box/.style={black,very thick},
-				every whisker/.style={blue, very thick},
-				every median/.style={red,ultra thick},
-			},
-		] coordinates {};
-		
-		\node[blue] at (1.65,10) {\large upper whisker};
-		\node(q3)[black] at (1.5,6.75) {\large Q3};
-		\node[red] at (1.55,5) {\large median};
-		\node(q1)[black] at (1.5,3) {\large Q1};
-		\node[blue] at (1.65,1) {\large lower whisker};
-		
-		\draw[|-|,thick] (1.72,7) -- (1.72,3);
-		\node[black] at (1.85,5) {\large IQR};
-		
-		\end{axis}
-		\end{tikzpicture}
-		% \caption{Box plot for different number of adaptive grids with a \textbf{threshold max-error of 1 $\%$}.}
-		% \caption{Box plot for \textbf{different adaptive grids} with a threshold error of 1 $\%$}
-	\end{figure}
-	
-	\begin{center}
-		$\bullet$ upper whisker = $Q3+1.5$ IQR
-		
-		\vspace{3mm}
-		
-		$\bullet$ lower whisker = $Q1-1.5$ IQR
-	\end{center}
-\end{frame}
-%================================================================================================================
 \begin{frame}{MAGO: Testing the Adaptive Meshes (1K samples)}
 	\boxplotmagocheck[Results/boxplot]{_1k}{mat_adapt_1}{mat_adapt_5}{mat_adapt_10}{mat_adapt_50}{mat_adapt_100}
 \end{frame}
 %================================================================================================================
-\begin{frame}{MAGO: Limiting the NDoFs (10K testing samples)}
-	\boxplotmagoNdof[Results/boxplot/ndofs_comparison]{10000}{1_10k}{5_10k}{10_10k}{100_10k}
-\end{frame}
-%================================================================================================================
-\begin{frame}{MAGO: Time to Generate Databases of 100K Samples}
-	\boxplotmagoTime[Results/boxplot]{_100k}{mat_adapt_1}{mat_adapt_5}{mat_adapt_100}
-\end{frame}
-%================================================================================================================
-\begin{frame}{MAGO: Importance of the Number of Testing Samples}
+\begin{frame}{MAGO: Importance of the Number of Validation Samples}
 	\boxplotmagochecksize[Results/boxplot]{mat_adapt_10}{10}
 \end{frame}
 %================================================================================================================
@@ -959,9 +705,19 @@
 		\begin{itemize}
 			\item Fast generation of synthetic measurements (100k in hours on a laptop).
 		\end{itemize}
-		\vspace{7mm}
-		\item Easy extrapolation of this idea to other equations or applications.
 	\end{itemize}
+	\begin{center}
+    \begin{tabular}{|c|c|}
+      \hline
+      \textbf{Number of  Training Samples} & \textbf{Time} \\
+      \hline
+      1 & $\sim10$ min \\
+      10 & $\sim80$ min \\
+      100 & $\sim28$h (1sam/s) \\
+      \hline
+    \end{tabular}
+    %\captionof{table}{Generating Databases of 100K Samples.}
+  \end{center}
 \end{frame}
 %================================================================================================================
 \begin{frame}
@@ -977,5 +733,200 @@
 	\end{itemize}
 \end{frame}
 %================================================================================================================
+%\begin{frame}
+%	\frametitle{Goal-Oriented Adaptivity}
+%\begin{block}{Element-Wise ($K$) Error Indicators}
+%	We obtain error indicators $\eta_K$ that measure the importance of each basis function.
+%\end{block}
+
+%\begin{block}{}
+%\begin{figure}
+%	\centering
+%	\begin{tikzpicture}[x=0.14cm,y=0.14cm]
+%	
+%	\node(origin) at (0,0) {};
+%	\node(end) at ($(origin)+(10,10)$) {};
+%	
+%	\node(f_int_origin) at (0.5,0.5) {};
+%	\node(f_int_end) at (1.5,1.5) {};
+%	\node(l_int_origin) at (8.5,8.5) {};
+%	\node(l_int_end) at (9.5,9.5) {};
+%	
+%	\node(layer1) at ($(origin)+(0,-0)$) {};
+%	\node(layer1_end) at ($(layer1)+(10,10)$) {};
+%	
+%	\draw [draw=black,fill=white,thick] (origin) rectangle (end);
+%	\draw[] ($(origin)+(5,0)$) -- ($(origin)+(5,10)$);
+%	\draw[] ($(origin)+(0,5)$) -- ($(origin)+(10,5)$);
+%	\node(s1) at ($(origin)+(2.5,2.5)$) {$\sig_3$};
+%	\node(s2) at ($(origin)+(7.5,2.5)$) {$\sig_4$};
+%	\node(s3) at ($(origin)+(2.5,7.5)$) {$\sig_1$};
+%	\node(s4) at ($(origin)+(7.5,7.5)$) {$\sig_2$};
+%	\node(s5) at ($(origin)+(5,-2)$) {$\m$}; 
+%	\node(ss) at ($(origin)+(30,5)$) {$\rightarrow$ \hspace{3mm} Construction of $1$ $hp$-grid};
+%	\node(sss) at ($(origin)+(-24,7.5)$) {$\m = \{\sig_1, \ldots, \sig_N\}$};
+%	\node(ssss) at ($(origin)+(-24,2.5)$) {$1$ sample of model parameters};
+%	
+%	
+%	\end{tikzpicture}
+%\end{figure}
+%\end{block}
+
+%\begin{figure}
+%	\centering
+%	\begin{tikzpicture}[x=0.45cm,y=0.5cm]
+%	
+%		\node(origin) at (0,0) {};
+%		\node(end) at ($(origin)+(10,10)$) {};
+%		
+%		\node(f_int_origin) at (0.5,0.5) {};
+%		\node(f_int_end) at (1.5,1.5) {};
+%		\node(l_int_origin) at (8.5,8.5) {};
+%		\node(l_int_end) at (9.5,9.5) {};
+%		
+%		\node(layer1) at ($(origin)+(13,-0)$) {};
+%		\node(layer1_end) at ($(layer1)+(10,10)$) {};
+%		
+%		\draw [draw=black,fill=white,very thick] (origin) rectangle (end);
+%		\draw [draw=black,fill=brown!20,very thick] (origin) rectangle ($(origin)+(5,5)$);
+%		\draw [draw=black,fill=gray!20,very thick] ($(origin)+(5,0)$) rectangle ($(origin)+(10,5)$);
+%		\draw [draw=black,fill=purple!20,very thick] ($(origin)+(0,5)$) rectangle ($(origin)+(5,10)$);
+%		\draw [draw=black,fill=orange!40,very thick] ($(origin)+(5,5)$) rectangle ($(origin)+(10,10)$);
+%		
+%		\node(s1) at ($(origin)+(2.5,2.5)$) {\Large{$\sig_3$}};
+%		\node(s2) at ($(origin)+(7.5,2.5)$) {\Large{$\sig_4$}};
+%		\node(s3) at ($(origin)+(2.5,7.5)$) {\Large{$\sig_1$}};
+%		\node(s4) at ($(origin)+(7.5,7.5)$) {\Large{$\sig_2$}};
+%		\node(s5) at ($(origin)+(5,-1)$) {\tcr{(a)} Model Parameters Grid};
+%		
+%		\node(arr) at ($(layer1)+(-1.5,5)$) {$\rightarrow$}; 
+%		\draw [draw=black,fill=white,very thick] (layer1) rectangle (layer1_end);
+%		\draw [draw=black,fill=brown!20,very thick] (layer1) rectangle ($(layer1)+(5,5)$);
+%		\draw [draw=black,fill=gray!20,very thick] ($(layer1)+(5,0)$) rectangle ($(layer1)+(10,5)$);
+%		\draw [draw=black,fill=purple!20,very thick] ($(layer1)+(0,5)$) rectangle ($(layer1)+(5,10)$);
+%		\draw [draw=black,fill=orange!40,very thick] ($(layer1)+(5,5)$) rectangle ($(layer1)+(10,10)$);
+%		
+%		\draw[] ($(layer1)+(2.5,0)$) -- ($(layer1)+(2.5,10)$);
+%		\draw[] ($(layer1)+(7.5,0)$) -- ($(layer1)+(7.5,10)$);
+%		\draw[] ($(layer1)+(0,2.5)$) -- ($(layer1)+(10,2.5)$);
+%		\draw[] ($(layer1)+(0,7.5)$) -- ($(layer1)+(10,7.5)$);
+%		
+%		\node(e) at ($(layer1)+(1.25,1.25)$) {\Large{$\eta_{13}$}};
+%		\node(e) at ($(layer1)+(3.75,1.25)$) {\Large{$\eta_{14}$}};
+%		\node(e) at ($(layer1)+(6.25,1.25)$) {\Large{$\eta_{15}$}};
+%		\node(e) at ($(layer1)+(8.75,1.25)$) {\Large{$\eta_{16}$}};
+%		
+%		\node(e) at ($(layer1)+(1.25,3.75)$) {\Large{$\eta_{9}$}};
+%		\node(e) at ($(layer1)+(3.75,3.75)$) {\Large{$\eta_{10}$}};
+%		\node(e) at ($(layer1)+(6.25,3.75)$) {\Large{$\eta_{11}$}};
+%		\node(e) at ($(layer1)+(8.75,3.75)$) {\Large{$\eta_{12}$}};
+%		
+%		\node(e) at ($(layer1)+(1.25,6.25)$) {\Large{$\eta_{4}$}};
+%		\node(e) at ($(layer1)+(3.75,6.25)$) {\Large{$\eta_{5}$}};
+%		\node(e) at ($(layer1)+(6.25,6.25)$) {\Large{$\eta_{6}$}};
+%		\node(e) at ($(layer1)+(8.75,6.25)$) {\Large{$\eta_{7}$}};
+%		
+%		\node(e) at ($(layer1)+(1.25,8.75)$) {\Large{$\eta_{1}$}};
+%		\node(e) at ($(layer1)+(3.75,8.75)$) {\Large{$\eta_{2}$}};
+%		\node(e) at ($(layer1)+(6.25,8.75)$) {\Large{$\eta_{3}$}};
+%		\node(e) at ($(layer1)+(8.75,8.75)$) {\Large{$\eta_{4}$}};
+%		
+%		\node(l_m3) at ($(layer1)+(5,-1)$) {\tcr{(b)} FEM Grid (Conforming with Parameters)};
+%		
+%	\end{tikzpicture}
+%\end{figure}
+%
+%\end{frame}
+%================================================================================================================
+%\begin{frame}
+%\frametitle{Goal-Oriented Adaptivity}
+%
+%\begin{block}{The objective in Goal-Oriented Adaptivity}
+%	To produce a space $\H_{\calF}$ with minimum dimension such that
+%	\vspace{-2mm}
+%	\begin{align}
+%	\abs{l(u^{\calF})-l(u)} < \varepsilon, \quad \text{for any } \varepsilon > 0,
+%	\end{align}
+%	where \tcr{$l(\cdot)$} is a linear and continuous functional that defines the \tcr{Quantity of Interest} (QoI).
+%\end{block}
+%
+%\begin{block}{Discrete Variational Formulations}
+%	Given a model $\m$, find $\um^{\calF}, \vm^{\calF} \in \H_{\calF}$ such that
+%	\vspace{-1mm}
+%	\begin{equation*}
+%	\begin{array}{lrcl}
+%	\text{Forward Problem:} \hspace{15mm} & b(\um^{\calF},\phi^{\calF}) & = & f(\phi^{\calF}), \quad \forall \phi^{\calF} \in \H_{\calF},   \\[2mm]
+%	\text{Adjoint Problem:} \hspace{15mm} & b(\phi^{\calF},\vm^{\calF}) & = & l(\phi^{\calF}), \quad \forall \phi^{\calF} \in \H_{\calF}. \\
+%	\end{array}
+%	\end{equation*}
+%\end{block}
+%
+%%Explain the process of constructing a $1$ $hp$-grid, as depicted in the figure. Elaborate on the different elements $\sig_1, \sig_2, \sig_3, \sig_4$, and $\m$, which represent the grid elements and the model parameters, respectively. Emphasize that the goal is to construct an optimized grid based on the given model parameters.
+%
+%%Emphasize the significance of minimizing the dimension of the adapted space $\H_{\calF}$ while maintaining the desired accuracy in the quantity of interest. Explain how this optimization process allows for efficient computations and resource utilization.
+%
+%\end{frame}
+%================================================================================================================
+%\begin{frame}{MAGO: Meaning of a Box Plot}
+%	\begin{figure}
+%		\centering
+%		\begin{tikzpicture}
+%		\begin{axis}[
+%			boxplot/draw direction=y,
+%			boxplot/variable width,
+%			x axis line style={opacity=0},
+%			axis x line*=bottom,
+%			axis y line=left,
+%			enlarge y limits,
+%			xtick={1},
+%			xticklabels={},
+%			height=\plotheight,
+%			width=0.8\plotwidth,
+%			ymin=-0.1,
+%			xmax=2,
+%			ymax=10,
+%			ylabel={Relative error in the QoI (\%)},
+%		]
+%		
+%		\addplot+[
+%			boxplot prepared={
+%				median=5,
+%				upper quartile=7,
+%				lower quartile=3,
+%				upper whisker=10,
+%				lower whisker=1,
+%				every box/.style={black,very thick},
+%				every whisker/.style={blue, very thick},
+%				every median/.style={red,ultra thick},
+%			},
+%		] coordinates {};
+%		
+%		\node[blue] at (1.65,10) {\large upper whisker};
+%		\node(q3)[black] at (1.5,6.75) {\large Q3};
+%		\node[red] at (1.55,5) {\large median};
+%		\node(q1)[black] at (1.5,3) {\large Q1};
+%		\node[blue] at (1.65,1) {\large lower whisker};
+%		
+%		\draw[|-|,thick] (1.72,7) -- (1.72,3);
+%		\node[black] at (1.85,5) {\large IQR};
+%		
+%		\end{axis}
+%		\end{tikzpicture}
+%		% \caption{Box plot for different number of adaptive grids with a \textbf{threshold max-error of 1 $\%$}.}
+%		% \caption{Box plot for \textbf{different adaptive grids} with a threshold error of 1 $\%$}
+%	\end{figure}
+%	
+%	\begin{center}
+%		$\bullet$ upper whisker = $Q3+1.5$ IQR
+%		
+%		\vspace{3mm}
+%		
+%		$\bullet$ lower whisker = $Q1-1.5$ IQR
+%	\end{center}
+%\end{frame}
+%================================================================================================================
+%\begin{frame}{MAGO: Limiting the NDoFs (10K testing samples)}
+%	\boxplotmagoNdof[Results/boxplot/ndofs_comparison]{10000}{1_10k}{5_10k}{10_10k}{100_10k}
+%\end{frame}
 
 \end{document}
