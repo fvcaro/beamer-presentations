@@ -71,7 +71,7 @@
 	\inst{2} University of the Basque Country (UPV-EHU), Leioa, Spain \and 
 	\inst{3} CNRS-IRIT, Toulouse, France \and 
 	\inst{4} Basque Foundation for Science (Ikerbasque), Bilbao, Spain}
-\title[ADMOS2023]{Generation of Massive Databases for Deep Learning Inversion: A Goal-Oriented $hp$-Adaptive Strategy}
+\title[ADMOS2023]{Generation of Massive Databases for Deep Learning Inversion Using A Goal-Oriented $hp$-Adaptive Strategy}
 \date{\normalsize XI International Conference on Adaptive Modeling and Simulation (ADMOS) \\[0.3cm] Gothenburg, Sweden, 19 June 2023}
 
 % Set author, date, and institute colors and fonts
@@ -591,27 +591,27 @@ F. V. Caro, V. Darrigrand, J. Alvarez-Aramberri, E. Alberdi, D. Pardo
 
 \end{frame}
 %================================================================================================================
-\begin{frame}
-	\frametitle{MAGO: (M)ulti-(A)daptive (G)oal-(O)riented}
-	\underline{\textbf{\tcr{\Large{Main Advantages}}}}:
-
-\begin{itemize}
-	\item \textbf{Single $\boldsymbol{hp}$-mesh}:
-	\begin{itemize}
-		\item Easier implementation.
-	\end{itemize}
-	
-	\vspace{5mm}
-	
-	\item \textbf{Precomputation and Parallelization}:
-	\begin{itemize}
-		\item Precompute integrals of stiffness matrix, right-hand sides and error indicators.
-		\item Parallelize the adaptive process and database generation.
-		\item Compute the analysis part (symbolic factorization) once.
-	\end{itemize}
-\end{itemize}
-
-\end{frame}
+%\begin{frame}
+%	\frametitle{MAGO: (M)ulti-(A)daptive (G)oal-(O)riented}
+%	\underline{\textbf{\tcr{\Large{Main Advantages}}}}:
+%
+%\begin{itemize}
+%	\item \textbf{Single $\boldsymbol{hp}$-mesh}:
+%	\begin{itemize}
+%		\item Easier implementation.
+%	\end{itemize}
+%	
+%	\vspace{5mm}
+%	
+%	\item \textbf{Precomputation and Parallelization}:
+%	\begin{itemize}
+%		\item Precompute integrals of stiffness matrix, right-hand sides and error indicators.
+%		\item Parallelize the adaptive process and database generation.
+%		\item Compute the analysis part (symbolic factorization) once.
+%	\end{itemize}
+%\end{itemize}
+%
+%\end{frame}
 %================================================================================================================
 \section{Numerical Experiments: Proof of Concept}
 %================================================================================================================
@@ -678,7 +678,7 @@ F. V. Caro, V. Darrigrand, J. Alvarez-Aramberri, E. Alberdi, D. Pardo
 	\end{figure}
 \end{frame}
 %================================================================================================================
-\begin{frame}{MAGO: Testing the Adaptive Meshes (1K samples)}
+\begin{frame}{MAGO: Validating the Adaptive Meshes with 1K Samples}
 	\boxplotmagocheck[Results/boxplot]{_1k}{mat_adapt_1}{mat_adapt_5}{mat_adapt_10}{mat_adapt_50}{mat_adapt_100}
 \end{frame}
 %================================================================================================================
@@ -686,38 +686,86 @@ F. V. Caro, V. Darrigrand, J. Alvarez-Aramberri, E. Alberdi, D. Pardo
 	\boxplotmagochecksize[Results/boxplot]{mat_adapt_10}{10}
 \end{frame}
 %================================================================================================================
-\begin{frame}[c]
+%\begin{frame}[c]
+%	\frametitle{Summary}
+%	\vspace{5mm}
+%	\begin{itemize}
+%		\item Robust automatic $hp$-adaptive strategy for a given model.
+%		\vspace{7mm}
+%		\item \textbf{Extension} of the strategy to \textbf{parametric PDEs}.
+%		\vspace{3mm}
+%		\begin{itemize}
+%			\item Single $hp$-mesh for any model parameters: Easier implementation.
+%		\end{itemize}
+%		\vspace{7mm}
+%		\item \textbf{High computational} cost savings: Precompute integrals of stiffness matrix, right-hand sides and error indicators and parallelize the adaptive process and database generation.
+%		\vspace{7mm}
+%		\item \textbf{Promising approach} for generating \tcr{databases for DL inversion}.
+%		\vspace{3mm}
+%		\begin{itemize}
+%			\item Fast generation of synthetic measurements (100k samples in hours on a laptop).
+%		\end{itemize}
+%	\end{itemize}
+	%\begin{itemize}
+%	\item \textbf{Single $\boldsymbol{hp}$-mesh}:
+%	\begin{itemize}
+%		\item Easier implementation.
+%	\end{itemize}
+%	
+%	\vspace{5mm}
+%	
+%	\item \textbf{Precomputation and Parallelization}:
+%	\begin{itemize}
+%		\item Precompute integrals of stiffness matrix, right-hand sides and error indicators.
+%		\item Parallelize the adaptive process and database generation.
+%		\item Compute the analysis part (symbolic factorization) once.
+%	\end{itemize}
+%\end{itemize}
+%	\begin{center}
+%    \begin{tabular}{|c|c|}
+%      \hline
+%      \textbf{Number of  Training Samples} & \textbf{Time} \\
+%      \hline
+%      1 & $\sim10$ min \\
+%      10 & $\sim80$ min \\
+%      100 & $\sim28$h (1sam/s) \\
+%      \hline
+%    \end{tabular}
+    %\captionof{table}{Generating Databases of 100K Samples.}
+    %\end{center}
+%\end{frame}
+%================================================================================================================
+\begin{frame}
 	\frametitle{Summary}
-	\vspace{5mm}
+	
 	\begin{itemize}
 		\item Robust automatic $hp$-adaptive strategy for a given model.
-		\vspace{7mm}
+	\end{itemize}
+	
+	\vspace{5mm}
+	
+	\begin{itemize}
 		\item \textbf{Extension} of the strategy to \textbf{parametric PDEs}.
-		\vspace{3mm}
 		\begin{itemize}
-			\item Single $hp$-mesh for any model parameters.
-		\end{itemize}
-		\vspace{7mm}
-		\item \textbf{High computational} cost savings (precomputations and parallelizations).
-		\vspace{7mm}
-		\item \textbf{Promising approach} for generating \tcr{databases for DL inversion}.
-		\vspace{3mm}
-		\begin{itemize}
-			\item Fast generation of synthetic measurements (100k in hours on a laptop).
+			\item Single $hp$-mesh for any model parameters: Easier implementation.
 		\end{itemize}
 	\end{itemize}
-	\begin{center}
-    \begin{tabular}{|c|c|}
-      \hline
-      \textbf{Number of  Training Samples} & \textbf{Time} \\
-      \hline
-      1 & $\sim10$ min \\
-      10 & $\sim80$ min \\
-      100 & $\sim28$h (1sam/s) \\
-      \hline
-    \end{tabular}
-    %\captionof{table}{Generating Databases of 100K Samples.}
-  \end{center}
+	
+	\vspace{5mm}
+	
+	\begin{itemize}
+		\item \textbf{High computational} cost savings: Precompute integrals of stiffness matrix, right-hand sides, and error indicators, and parallelize the adaptive process and database generation.
+	\end{itemize}
+	
+	\vspace{5mm}
+	
+	\begin{itemize}
+		\item \textbf{Promising approach} for generating \textcolor{red}{databases for DL inversion}.
+		\begin{itemize}
+			\item Fast generation of synthetic measurements (100k samples in hours on a laptop).
+		\end{itemize}
+	\end{itemize}
+	
 \end{frame}
 %================================================================================================================
 \begin{frame}
