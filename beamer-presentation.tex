@@ -1,4 +1,4 @@
-\documentclass[10pt,aspectratio=149]{beamer}
+\documentclass[10pt,aspectratio=169]{beamer}
 
 % Themes and color theme
 \usetheme{Boadilla}
@@ -66,7 +66,7 @@
 \input{plot_beamer.tex}
 
 % Author, institute, title, and date
-\author{Julen Alvarez-Aramberri \inst{2} \and Vincent Darrigrand \inst{3} \and \underline{Felipe V. Caro }\inst{1,2} \and David Pardo \inst{2,1,4}}
+\author{\underline{Felipe V. Caro }\inst{1,2} \and Vincent Darrigrand\inst{3} \and Julen Alvarez-Aramberri \inst{2} \and David Pardo \inst{2,1,4}}
 \institute[]{\inst{1} Basque Center for Applied Mathematics (BCAM), Bilbao, Spain \and %
 	\inst{2} University of the Basque Country (UPV-EHU), Leioa, Spain \and 
 	\inst{3} CNRS-IRIT, Toulouse, France \and 
@@ -185,14 +185,14 @@ where evaluating $\textcolor{red}{\mathcal{F}}$ is \textcolor{red}{expensive}!
 	\tableofcontents
 \end{frame}
 %================================================================================================================
-\section{A Painless $hp$-Adaptive FEM Strategy for Non-parametric PDEs}
+\section{A Painless $hp$-Adaptive FEM Strategy for Non-Parametric PDEs}
 %================================================================================================================
 \begin{frame}
     \frametitle{Outline}
     \tableofcontents[currentsection]
 \end{frame}
 %================================================================================================================
-\begin{frame}{A Painless $hp$-Adaptive Strategy for Non-PPDEs}
+\begin{frame}{A Painless $hp$-Adaptive Strategy for Non-Parametric PDEs}
   \tikzset{/tikz/external/export next=false}
   \begin{center}
     \begin{tikzpicture}
@@ -374,7 +374,7 @@ F. V. Caro, V. Darrigrand, J. Alvarez-Aramberri, E. Alberdi, D. Pardo
 	\vspace{-1mm}	
 
 \begin{block}{Objective}
-	To control the relative error, ensuring that it falls within a specified tolerance $TOL$:
+	To control the relative error the \tcr{Quantity of Interest} (QoI), ensuring that it falls within a specified tolerance $TOL$:
 	\begin{equation}
 		\max_{i, \{\m_i\}_{i=1}^S} \left\{ \frac{\abs{l(\umi^F)-l(\umi^C)}}{\abs{l(\umi^F)}}\right\} < TOL.
 	\end{equation}
@@ -745,7 +745,7 @@ F. V. Caro, V. Darrigrand, J. Alvarez-Aramberri, E. Alberdi, D. Pardo
 	\vspace{5mm}
 	
 	\begin{itemize}
-		\item \textbf{Extension} of the strategy to \textbf{parametric PDEs}.
+		\item \textbf{Extension} of the strategy to \textbf{Parametric PDEs}.
 		\begin{itemize}
 			\item Single $hp$-mesh for any model parameters: Easier implementation.
 		\end{itemize}

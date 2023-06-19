@@ -88,14 +88,14 @@
   \FormatIntegerTwoDigit{\endIter}{\endIterformated}
   \FormatIntegerThreeDigit{\endIter}{\endIterformatedthree}
  %
-  \begin{subfigure}[t]{0.45\textwidth}
+  \begin{subfigure}[t]{0.4\textwidth}
     \centering
     \directadjointsolution{#2/hp/order_1}{\endIterformated}{Direct_solution_#3}{Direct}{#1}%
     \caption{Solution to the direct problem.}
     \label{fig:#2_dir}
   \end{subfigure}
   ~
-  \begin{subfigure}[t]{0.45\textwidth}
+  \begin{subfigure}[t]{0.4\textwidth}
    \centering
    \directadjointsolution{#2/hp/order_1}{\endIterformated}{Adjoint_solution_#3}{Adjoint}{#1}%
     \caption{Solution to the adjoint problem.}
@@ -113,13 +113,13 @@
     \begin{figure}
       \centering
       \foreach \i in {x,y}{%
-        \begin{subfigure}{\subplotwidth}
+        \begin{subfigure}[t]{0.4\textwidth}
           \centering
           \hpmeshes{#2/hp/order_1}{\endIterformatedthree}{\i}%
           \subcaption{Polynomial orders $p$ in the \i-direction}
         \end{subfigure}
       }
-      \caption{Final $hp$-adapted meshes.} %after the Goal-Oriented Adaptivity}
+      \caption{Final $hp$-adapted meshes after the adaptivity}
     \end{figure}
   }
 }
@@ -2469,7 +2469,7 @@ hide axis,
     {\caption{Domain illustration ($5 \times 5$ grid)}}
   \end{subfigure}
   ~
- \begin{subfigure}[t]{0.4\textwidth}
+ \begin{subfigure}[t]{0.35\textwidth}
     \centering
     \skewright{#2}
     {\caption{$\tcr{\boldsymbol{\sigma(x)}}$ varying 4 orders of magnitude.}}
